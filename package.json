@@ -1,0 +1,29 @@
+{
+  "name": "cryptotool-monorepo",
+  "version": "1.0.0",
+  "description": "Enterprise Cryptographic Discovery & Analysis Tool (ECDAT - SIH26164)",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:web": "cd apps/web && npm run dev",
+    "dev:api": "cd apps/api && npm run dev",
+    "build": "npm run build:web && npm run build:api",
+    "build:web": "cd apps/web && npm run build",
+    "build:api": "cd apps/api && npm run build",
+    "test:scanner": "python apps/scanner/scanner.py samples/cryptotalk"
+  },
+  "keywords": [
+    "cryptography",
+    "security",
+    "discovery",
+    "crypto-bom",
+    "pqc",
+    "sih26164"
+  ],
+  "author": "Antigravity DevSecOps Team",
+  "license": "Apache-2.0"
+}
