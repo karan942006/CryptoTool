@@ -5,7 +5,7 @@ interface ScoreGaugeProps {
   size?: number;
   label?: string;
   sublabel?: string;
-  type?: 'security' | 'pqc';
+  type?: 'security' | 'pqc' | 'overall';
 }
 
 export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
@@ -90,7 +90,7 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
             / 100
           </span>
           <span
-            className="text-[11px] font-semibold mt-1 px-2 py-0.5 rounded-full"
+            className="text-[11px] font-semibold mt-1 px-2 py-0.5 rounded-full font-mono"
             style={{ color: color, backgroundColor: `${color}15` }}
           >
             {getStatusText()}

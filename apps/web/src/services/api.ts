@@ -702,6 +702,456 @@ export async function fetchAuditLogs(): Promise<AuditLogEntry[]> {
   ];
 }
 
+// ============================================================
+// 🌟 DIGITAL TWIN & ADVANCED ECDAT 2.0 ENDPOINTS
+// ============================================================
+export async function fetchDigitalTwin(): Promise<import('../types').DigitalTwinGraph> {
+  try {
+    const res = await fetch(`${API_BASE}/digital-twin`, { signal: AbortSignal.timeout(2500) });
+    if (res.ok) return res.json();
+  } catch {}
+
+  // Local fallback graph
+  return {
+    nodes: [
+      {
+        id: 'node-ent',
+        label: 'National Cyber Enterprise Hub',
+        type: 'enterprise',
+        category: 'Enterprise Infrastructure',
+        status: 'high',
+        x: 450,
+        y: 30,
+        details: {
+          quantum_status: 'Vulnerable',
+          data_sensitivity: 'Critical',
+          data_lifetime_years: 25,
+          migration_time_years: 4,
+          hndl_risk: 'HIGH',
+          business_criticality: 'CRITICAL',
+          recommended_pqc: 'NIST CNSA 2.0 Complete Suite',
+          hybrid_candidate: 'Hybrid X25519 + ML-KEM-768 / Dual Certs',
+          migration_difficulty: 'COMPLEX',
+          estimated_cost_inr: '₹18.4 Lakh',
+          priority: 'P0',
+          affected_services: ['Legacy Banking', 'Citizen Identity', 'Payment Gateway']
+        }
+      },
+      {
+        id: 'node-app-payment',
+        label: 'Payment Tokenization API',
+        type: 'app',
+        category: 'Financial API Gateway',
+        status: 'critical',
+        x: 180,
+        y: 160,
+        details: {
+          algorithm: 'RSA-2048',
+          usage: 'Key Establishment & TLS Handshake',
+          key_size: '2048-bit',
+          quantum_status: 'Vulnerable',
+          data_sensitivity: 'Critical',
+          data_lifetime_years: 15,
+          migration_time_years: 3,
+          hndl_risk: 'CRITICAL',
+          business_criticality: 'CRITICAL',
+          recommended_pqc: 'ML-KEM-768 (FIPS 203)',
+          hybrid_candidate: 'X25519 + ML-KEM-768 Hybrid',
+          migration_difficulty: 'MEDIUM',
+          estimated_cost_inr: '₹4.2 Lakh',
+          priority: 'P0',
+          affected_files: ['PaymentTokenGateway.java', 'TLSConfig.java']
+        }
+      },
+      {
+        id: 'node-app-gov',
+        label: 'Citizen Identity e-ID Portal',
+        type: 'app',
+        category: 'Government SSO / PII',
+        status: 'high',
+        x: 450,
+        y: 160,
+        details: {
+          algorithm: 'ECDSA-P256',
+          usage: 'Digital Signatures & Identity Tokens',
+          key_size: '256-bit ECC',
+          quantum_status: 'Vulnerable',
+          data_sensitivity: 'Critical',
+          data_lifetime_years: 25,
+          migration_time_years: 4,
+          hndl_risk: 'HIGH',
+          business_criticality: 'CRITICAL',
+          recommended_pqc: 'ML-DSA-65 (FIPS 204)',
+          hybrid_candidate: 'Dual Signature Composite (ECDSA + ML-DSA)',
+          migration_difficulty: 'HIGH',
+          estimated_cost_inr: '₹6.8 Lakh',
+          priority: 'P0',
+          affected_files: ['AuthManager.kt', 'IdentityCert.x509']
+        }
+      },
+      {
+        id: 'node-app-cryptotalk',
+        label: 'CryptoTalk Secure Messenger',
+        type: 'app',
+        category: 'Mobile E2EE Messaging',
+        status: 'safe',
+        x: 720,
+        y: 160,
+        details: {
+          algorithm: 'AES-256-GCM + X25519',
+          usage: 'End-to-End Chat Confidentiality',
+          key_size: '256-bit',
+          quantum_status: 'Protected',
+          data_sensitivity: 'Medium',
+          data_lifetime_years: 2,
+          migration_time_years: 1,
+          hndl_risk: 'LOW',
+          business_criticality: 'HIGH',
+          recommended_pqc: 'ML-KEM-768 for Ratchet',
+          hybrid_candidate: 'Double Ratchet + Kyber Hybrid',
+          migration_difficulty: 'LOW',
+          estimated_cost_inr: '₹1.5 Lakh',
+          priority: 'P3',
+          affected_files: ['CryptoTalkManager.java']
+        }
+      },
+      {
+        id: 'node-crypto-rsa',
+        label: 'RSA-2048 / RSA-1024',
+        type: 'crypto',
+        category: 'Asymmetric Primitive',
+        status: 'critical',
+        x: 180,
+        y: 300,
+        details: {
+          algorithm: 'RSA-2048 / 1024',
+          usage: 'Public Key Encryption & Signatures',
+          quantum_status: 'Vulnerable',
+          data_sensitivity: 'Critical',
+          data_lifetime_years: 15,
+          migration_time_years: 3,
+          hndl_risk: 'CRITICAL',
+          business_criticality: 'CRITICAL',
+          recommended_pqc: 'ML-KEM-768 & ML-DSA-65',
+          hybrid_candidate: 'X25519_ML-KEM-768 / RSA_ML-DSA Dual',
+          migration_difficulty: 'MEDIUM',
+          estimated_cost_inr: '₹4.2 Lakh',
+          priority: 'P0'
+        }
+      },
+      {
+        id: 'node-threat-shor',
+        label: 'CRQC Shor\'s Threat Horizon',
+        type: 'quantum_threat',
+        category: 'Quantum Threat Vector',
+        status: 'critical',
+        x: 300,
+        y: 440,
+        details: {
+          algorithm: 'Polynomial Time Discrete Log & Factoring',
+          usage: 'Breaks all RSA, ECC, DH, DSA key exchanges and signatures',
+          quantum_status: 'Vulnerable',
+          data_sensitivity: 'Critical',
+          data_lifetime_years: 25,
+          migration_time_years: 5,
+          hndl_risk: 'CRITICAL',
+          business_criticality: 'CRITICAL',
+          recommended_pqc: 'NIST FIPS 203 (ML-KEM) & FIPS 204 (ML-DSA)',
+          hybrid_candidate: 'Immediate Hybrid Key Exchange Deployment',
+          migration_difficulty: 'HIGH',
+          estimated_cost_inr: '₹8.4 Lakh',
+          priority: 'P0'
+        }
+      },
+      {
+        id: 'node-pqc-mlkem',
+        label: 'ML-KEM-768 (FIPS 203)',
+        type: 'pqc_solution',
+        category: 'Post-Quantum KEM',
+        status: 'pqc_ready',
+        x: 180,
+        y: 570,
+        details: {
+          algorithm: 'ML-KEM-768 (Module-Lattice KEM)',
+          usage: 'Key Encapsulation & TLS 1.3 Key Exchange',
+          key_size: '1184-byte Public Key',
+          quantum_status: 'Resistant',
+          data_sensitivity: 'Critical',
+          data_lifetime_years: 50,
+          migration_time_years: 2,
+          hndl_risk: 'LOW',
+          business_criticality: 'CRITICAL',
+          recommended_pqc: 'NIST Final Standard FIPS 203',
+          hybrid_candidate: 'X25519 + ML-KEM-768',
+          migration_difficulty: 'LOW',
+          estimated_cost_inr: '₹2.8 Lakh',
+          priority: 'P0'
+        }
+      },
+      {
+        id: 'node-pqc-mldsa',
+        label: 'ML-DSA-65 (FIPS 204)',
+        type: 'pqc_solution',
+        category: 'Post-Quantum Signature',
+        status: 'pqc_ready',
+        x: 450,
+        y: 570,
+        details: {
+          algorithm: 'ML-DSA-65 (Dilithium)',
+          usage: 'Digital Signatures, PKI Certificates, Code Signing',
+          key_size: '1952-byte Public Key',
+          quantum_status: 'Resistant',
+          data_sensitivity: 'Critical',
+          data_lifetime_years: 50,
+          migration_time_years: 3,
+          hndl_risk: 'LOW',
+          business_criticality: 'CRITICAL',
+          recommended_pqc: 'NIST Final Standard FIPS 204',
+          hybrid_candidate: 'Dual Cert / Composite Signature',
+          migration_difficulty: 'MEDIUM',
+          estimated_cost_inr: '₹3.6 Lakh',
+          priority: 'P1'
+        }
+      }
+    ],
+    edges: [
+      { id: 'e1', source: 'node-ent', target: 'node-app-payment', label: 'Protects Cards', animated: true, color: '#f43f5e' },
+      { id: 'e2', source: 'node-ent', target: 'node-app-gov', label: 'Citizen e-ID', animated: true, color: '#f97316' },
+      { id: 'e3', source: 'node-ent', target: 'node-app-cryptotalk', label: 'E2EE Comms', animated: false, color: '#10b981' },
+      { id: 'e4', source: 'node-app-payment', target: 'node-crypto-rsa', label: 'Uses RSA-2048', animated: true, color: '#f43f5e' },
+      { id: 'e7', source: 'node-crypto-rsa', target: 'node-threat-shor', label: 'Shor Factoring (Broken)', animated: true, color: '#f43f5e' },
+      { id: 'e9', source: 'node-threat-shor', target: 'node-pqc-mlkem', label: 'Migrate Key Exchange', animated: true, color: '#a855f7' },
+      { id: 'e10', source: 'node-threat-shor', target: 'node-pqc-mldsa', label: 'Migrate Signatures', animated: true, color: '#a855f7' }
+    ],
+    summary: {
+      total_nodes: 8,
+      vulnerable_nodes: 4,
+      pqc_ready_nodes: 3,
+      highest_risk_node: 'Payment Tokenization API (RSA-2048 / HNDL Critical)',
+      overall_posture: 'Elevated Quantum Exposure — Immediate Hybrid KEM Migration Required'
+    }
+  };
+}
+
+export async function calculateMoscaRisk(params: import('../types').MoscaSimulationParams): Promise<import('../types').MoscaRiskResult> {
+  try {
+    const res = await fetch(`${API_BASE}/quantum-risk/mosca`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+      signal: AbortSignal.timeout(2000)
+    });
+    if (res.ok) return res.json();
+  } catch {}
+
+  const sum = Number(params.data_lifetime_X) + Number(params.migration_time_Y);
+  const z = Number(params.crqc_arrival_Z);
+  const isVuln = sum > z;
+  return {
+    data_lifetime_X: params.data_lifetime_X,
+    migration_time_Y: params.migration_time_Y,
+    time_until_crqc_Z: z,
+    crqc_year: 2026 + z,
+    sum_XY: sum,
+    is_vulnerable: isVuln,
+    risk_level: isVuln ? (sum > z + 4 ? 'CRITICAL' : 'HIGH') : 'LOW',
+    headline: isVuln ? `⚠️ CRITICAL MOSCA RISK DETECTED (X + Y = ${sum}y > Z = ${z}y)` : `✅ SECURE QUANTUM BUFFER`,
+    explanation: isVuln ? `Data lifetime (${params.data_lifetime_X}y) and migration window (${params.migration_time_Y}y) exceed CRQC horizon.` : `Planned migration will complete securely.`,
+    action_required: isVuln ? 'Deploy NIST FIPS 203 (ML-KEM) hybrid key exchange immediately.' : 'Maintain standard roadmap.'
+  };
+}
+
+export async function fetchHNDLRiskRecords(): Promise<import('../types').HNDLRiskRecord[]> {
+  try {
+    const res = await fetch(`${API_BASE}/quantum-risk/hndl`, { signal: AbortSignal.timeout(2000) });
+    if (res.ok) return res.json();
+  } catch {}
+
+  return [
+    {
+      id: 'hndl-01',
+      asset_name: 'Central Patient Health Record (EHR) DB',
+      data_classification: 'Protected Health Information (PHI/Genomics)',
+      algorithm: 'RSA-2048 TLS Transfer',
+      key_size: 2048,
+      data_retention_years: 30,
+      estimated_migration_years: 4,
+      hndl_threat_score: 95,
+      hndl_status: 'CRITICAL',
+      recommended_immediate_action: 'Deploy hybrid TLS (X25519+ML-KEM-768) on EHR ingress gateway.'
+    },
+    {
+      id: 'hndl-02',
+      asset_name: 'National Citizen Identity & Auth Portal',
+      data_classification: 'Government Classified Citizen Biometrics',
+      algorithm: 'ECDSA-P256 Auth & RSA-2048 Signatures',
+      key_size: 2048,
+      data_retention_years: 25,
+      estimated_migration_years: 3,
+      hndl_threat_score: 88,
+      hndl_status: 'CRITICAL',
+      recommended_immediate_action: 'Transition e-ID tokens to ML-DSA-65 (FIPS 204).'
+    }
+  ];
+}
+
+export async function fetchPQCBenchmarks(): Promise<import('../types').PQCBenchmarkItem[]> {
+  try {
+    const res = await fetch(`${API_BASE}/pqc/benchmarks`, { signal: AbortSignal.timeout(2000) });
+    if (res.ok) return res.json();
+  } catch {}
+
+  return [
+    { algorithm: 'ML-KEM-512', type: 'KEM', standard: 'FIPS 203', security_category: 1, public_key_bytes: 800, ciphertext_or_sig_bytes: 768, secret_key_bytes: 1632, keygen_cpu_cycles_k: 28, encaps_or_sign_cpu_cycles_k: 34, decaps_or_verify_cpu_cycles_k: 32, estimated_latency_ms: 0.04, memory_peak_kb: 4.8, status: 'Standardized' },
+    { algorithm: 'ML-KEM-768', type: 'KEM', standard: 'FIPS 203', security_category: 3, public_key_bytes: 1184, ciphertext_or_sig_bytes: 1088, secret_key_bytes: 2400, keygen_cpu_cycles_k: 46, encaps_or_sign_cpu_cycles_k: 53, decaps_or_verify_cpu_cycles_k: 49, estimated_latency_ms: 0.06, memory_peak_kb: 6.2, status: 'Standardized' },
+    { algorithm: 'ML-KEM-1024', type: 'KEM', standard: 'FIPS 203', security_category: 5, public_key_bytes: 1568, ciphertext_or_sig_bytes: 1568, secret_key_bytes: 3168, keygen_cpu_cycles_k: 68, encaps_or_sign_cpu_cycles_k: 79, decaps_or_verify_cpu_cycles_k: 73, estimated_latency_ms: 0.09, memory_peak_kb: 8.1, status: 'Standardized' },
+    { algorithm: 'ML-DSA-65', type: 'Signature', standard: 'FIPS 204', security_category: 3, public_key_bytes: 1952, ciphertext_or_sig_bytes: 3309, secret_key_bytes: 4032, keygen_cpu_cycles_k: 125, encaps_or_sign_cpu_cycles_k: 410, decaps_or_verify_cpu_cycles_k: 155, estimated_latency_ms: 0.48, memory_peak_kb: 22.0, status: 'Standardized' },
+    { algorithm: 'SLH-DSA-128s', type: 'Signature', standard: 'FIPS 205', security_category: 1, public_key_bytes: 32, ciphertext_or_sig_bytes: 7856, secret_key_bytes: 64, keygen_cpu_cycles_k: 1250, encaps_or_sign_cpu_cycles_k: 18400, decaps_or_verify_cpu_cycles_k: 1420, estimated_latency_ms: 18.2, memory_peak_kb: 36.4, status: 'Standardized' },
+    { algorithm: 'HQC-128', type: 'KEM', standard: 'NIST Selected Round 4', security_category: 1, public_key_bytes: 2249, ciphertext_or_sig_bytes: 4497, secret_key_bytes: 2289, keygen_cpu_cycles_k: 110, encaps_or_sign_cpu_cycles_k: 195, decaps_or_verify_cpu_cycles_k: 280, estimated_latency_ms: 0.32, memory_peak_kb: 12.0, status: 'Selected' }
+  ];
+}
+
+export async function calculateMigrationCost(params: import('../types').MigrationCostParams): Promise<import('../types').MigrationCostResult> {
+  try {
+    const res = await fetch(`${API_BASE}/pqc/cost-estimator`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+      signal: AbortSignal.timeout(2000)
+    });
+    if (res.ok) return res.json();
+  } catch {}
+
+  const devCost = params.num_applications * params.estimated_developer_days_per_app * 8 * params.developer_hourly_rate_inr;
+  const certCost = params.num_certificates * 12000;
+  const hsmCost = params.num_hardware_hsms * 450000;
+  const infraCost = params.num_applications * 50000;
+  const testCost = params.num_applications * 75000;
+  const total = devCost + certCost + hsmCost + infraCost + testCost;
+
+  return {
+    developer_effort_cost_inr: devCost,
+    infrastructure_upgrade_inr: infraCost,
+    certificate_replacement_inr: certCost,
+    hardware_hsm_upgrade_inr: hsmCost,
+    testing_audit_cost_inr: testCost,
+    total_estimated_cost_inr: total,
+    total_estimated_cost_formatted: `₹${(total / 100000).toFixed(2)} Lakh`,
+    total_estimated_cost_usd_formatted: `$${(total / 85000).toFixed(1)}K USD`,
+    roi_risk_reduction_percentage: 94
+  };
+}
+
+export async function fetchCryptoAgility(): Promise<import('../types').CryptoAgilityScore> {
+  try {
+    const res = await fetch(`${API_BASE}/pqc/agility`, { signal: AbortSignal.timeout(2000) });
+    if (res.ok) return res.json();
+  } catch {}
+
+  return {
+    overall_score: 58,
+    rating: 'Moderate Agility',
+    breakdown: {
+      abstraction_layer_score: 45,
+      dynamic_cipher_negotiation: 70,
+      key_management_decoupling: 60,
+      automated_cert_rotation: 65,
+      config_driven_crypto: 50
+    },
+    recommendations: [
+      'Introduce cryptographic abstraction wrappers around javax.crypto and cryptography modules.',
+      'Deploy TLS 1.3 dynamic cipher suites supporting hybrid post-quantum key exchange (X25519_ML-KEM-768).',
+      'Automate certificate renewal pipelines with ACME protocol to facilitate seamless PQC dual-certificate deployment.'
+    ]
+  };
+}
+
+export async function fetchCryptoKeys(): Promise<import('../types').KeyMetadataEntry[]> {
+  try {
+    const res = await fetch(`${API_BASE}/crypto-keys`, { signal: AbortSignal.timeout(2000) });
+    if (res.ok) return res.json();
+  } catch {}
+
+  return [
+    {
+      id: 'k-01',
+      organization_id: 'a0000000-0000-0000-0000-000000000001',
+      asset_id: 'd-01',
+      asset_name: 'Payment Cloud HSM & KMS Cluster',
+      key_alias: 'prod-payment-transit-key-01',
+      key_type: 'asymmetric_public',
+      algorithm: 'RSA-2048',
+      key_size: 2048,
+      owner: 'SecOps Cloud Team',
+      application: 'Payment Tokenization Gateway',
+      creation_date: '2023-01-15T00:00:00Z',
+      expiration_date: '2026-01-15T00:00:00Z',
+      last_rotated_date: '2024-01-15T00:00:00Z',
+      rotation_status: 'compliant',
+      storage_location: 'AWS KMS (HSM)',
+      is_quantum_vulnerable: true,
+      pqc_candidate: 'ML-KEM-768 (FIPS 203)',
+      data_sensitivity: 'Financial / PCI-DSS'
+    },
+    {
+      id: 'k-02',
+      organization_id: 'a0000000-0000-0000-0000-000000000001',
+      asset_id: 'd-02',
+      asset_name: 'National Citizen Identity Portal',
+      key_alias: 'citizen-signing-root-ca-key',
+      key_type: 'asymmetric_public',
+      algorithm: 'ECDSA-P256',
+      key_size: 256,
+      owner: 'Gov PKI Authority',
+      application: 'Citizen e-ID Signatures',
+      creation_date: '2021-06-01T00:00:00Z',
+      expiration_date: '2031-06-01T00:00:00Z',
+      rotation_status: 'never_rotated',
+      storage_location: 'PKCS#11 HSM',
+      is_quantum_vulnerable: true,
+      pqc_candidate: 'ML-DSA-65 (FIPS 204)',
+      data_sensitivity: 'Top Secret / Government'
+    }
+  ];
+}
+
+export async function fetchCryptoStrengthMatrix(): Promise<import('../types').CryptoStrengthMatrixItem[]> {
+  try {
+    const res = await fetch(`${API_BASE}/crypto-testing/matrix`, { signal: AbortSignal.timeout(2000) });
+    if (res.ok) return res.json();
+  } catch {}
+
+  return [
+    { primitive: 'RSA-1024', family: 'RSA Asymmetric', classical_status: 'Broken', quantum_status: 'Broken', nist_standard_ref: 'NIST SP 800-131A (Disallowed since 2013)', recommended_pqc_alternative: 'ML-KEM-768 / ML-DSA-65', urgency: 'P0' },
+    { primitive: 'RSA-2048', family: 'RSA Asymmetric', classical_status: 'Acceptable (Legacy)', quantum_status: 'Quantum Vulnerable (Shor)', nist_standard_ref: 'NIST SP 800-57 Part 1 (112-bit security)', recommended_pqc_alternative: 'ML-KEM-768 / ML-DSA-65', urgency: 'P1' },
+    { primitive: 'ECDSA (P-256) / ECDH', family: 'Elliptic Curve', classical_status: 'Secure', quantum_status: 'Quantum Vulnerable (Shor)', nist_standard_ref: 'FIPS 186-5', recommended_pqc_alternative: 'Hybrid X25519 + ML-KEM-768', urgency: 'P1' },
+    { primitive: 'AES-128', family: 'Symmetric Block', classical_status: 'Secure', quantum_status: 'Quantum Halved (Grover)', nist_standard_ref: 'FIPS 197', recommended_pqc_alternative: 'Upgrade to AES-256 for 128-bit quantum margin', urgency: 'P2' },
+    { primitive: 'AES-256-GCM', family: 'Symmetric AEAD', classical_status: 'Secure', quantum_status: 'Quantum Resistant', nist_standard_ref: 'NIST SP 800-38D (128-bit quantum strength)', recommended_pqc_alternative: 'Retain AES-256 (Compliant)', urgency: 'Compliant' },
+    { primitive: 'SHA-1', family: 'Hash Function', classical_status: 'Broken', quantum_status: 'Broken', nist_standard_ref: 'NIST SP 800-131A Rev 2', recommended_pqc_alternative: 'SHA-256 / SHA3-256', urgency: 'P0' },
+    { primitive: 'MD5', family: 'Hash Function', classical_status: 'Broken', quantum_status: 'Broken', nist_standard_ref: 'RFC 6151 / Prohibited', recommended_pqc_alternative: 'SHA-256 / Argon2id', urgency: 'P0' }
+  ];
+}
+
+export async function askAICopilotSearch(query: string): Promise<{ answer: string; related_findings?: any[]; related_certificates?: any[]; suggested_action?: string; remediation_code?: any }> {
+  try {
+    const res = await fetch(`${API_BASE}/ai/copilot-search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+      signal: AbortSignal.timeout(5000)
+    });
+    if (res.ok) return res.json();
+  } catch {}
+
+  return {
+    answer: `Analysis for "${query}": Found 3 relevant cryptographic components across enterprise repositories. 
+- Payment API uses RSA-2048 for TLS key exchange (HNDL Risk: CRITICAL).
+- Legacy Banking API uses broken RSA-1024 (Priority: P0).
+Recommendation: Adopt NIST FIPS 203 (ML-KEM-768) hybrid key exchange.`,
+    suggested_action: 'Initiate ML-KEM Hybrid Pilot'
+  };
+}
+
 export async function resetDemoStore(): Promise<void> {
   localStorage.removeItem('cryptotool_scans');
   localStorage.removeItem('cryptotool_findings');
@@ -712,3 +1162,4 @@ export async function resetDemoStore(): Promise<void> {
     await fetch(`${API_BASE}/demo/reset`, { method: 'POST' });
   } catch {}
 }
+

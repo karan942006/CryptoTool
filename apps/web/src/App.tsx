@@ -6,6 +6,9 @@ import { Layout } from './components/layout/Layout';
 import { LandingPage } from './pages/LandingPage';
 import { Login, Register, ForgotPassword, Onboarding } from './pages/AuthPages';
 import { MainDashboard } from './pages/MainDashboard';
+import { DigitalTwinPage } from './pages/DigitalTwinPage';
+import { QuantumRiskPage } from './pages/QuantumRiskPage';
+import { CryptoTestingPage } from './pages/CryptoTestingPage';
 import { AssetsPage, AddAssetPage, AssetDetailsPage } from './pages/AssetsPages';
 import { StartScanPage, ScanProgressPage, ScanResultsPage, ScanHistoryPage } from './pages/ScanPages';
 import { CryptoBOMPage, CryptoInventoryPage } from './pages/CryptoBOMPages';
@@ -32,6 +35,9 @@ export const App: React.FC = () => {
           {/* Authenticated / Console Layout */}
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<MainDashboard />} />
+            <Route path="/digital-twin" element={<DigitalTwinPage />} />
+            <Route path="/quantum-risk" element={<QuantumRiskPage />} />
+            <Route path="/crypto-testing" element={<CryptoTestingPage />} />
             <Route path="/assets" element={<AssetsPage />} />
             <Route path="/assets/new" element={<AddAssetPage />} />
             <Route path="/assets/:id" element={<AssetDetailsPage />} />

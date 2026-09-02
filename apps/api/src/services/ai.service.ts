@@ -57,7 +57,7 @@ IMPORTANT: Base your analysis ONLY on the verified findings above. Do not invent
 
     const extract = (section: string) => {
       const match = text.match(new RegExp(`${section}:([\\s\\S]*?)(?=\\d+\\.|$)`, 'i'));
-      return match ? match[1].trim() : deterministicFallback[section.toLowerCase().replace('_', '_')];
+      return match ? match[1].trim() : (deterministicFallback as any)[section.toLowerCase()];
     };
 
     return {

@@ -18,6 +18,9 @@ import {
   PlusCircle,
   PlayCircle,
   KeyRound,
+  Sparkles,
+  Zap,
+  Boxes,
   LucideIcon
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
@@ -46,29 +49,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
 
   const navGroups: NavGroup[] = [
     {
-      group: 'Core Assessment',
+      group: 'Core Assessment & Twin',
       items: [
-        { name: 'Main Dashboard', path: '/dashboard', icon: LayoutDashboard },
-        { name: 'Assets & Targets', path: '/assets', icon: Layers },
-        { name: 'Start New Scan', path: '/scans/new', icon: PlayCircle, highlight: true },
+        { name: 'Control Dashboard', path: '/dashboard', icon: LayoutDashboard },
+        { name: '🌟 Crypto Digital Twin', path: '/digital-twin', icon: Sparkles, badge: 'WOW', highlight: true },
+        { name: 'Multi-Scanner Hub', path: '/scans/new', icon: PlayCircle },
+        { name: 'Assets & Cloud KMS', path: '/assets', icon: Layers },
         { name: 'Scan History', path: '/scans/history', icon: History },
       ]
     },
     {
-      group: 'Cryptographic Analysis',
+      group: 'Quantum Risk & PQC Engine',
       items: [
-        { name: 'Crypto-BOM', path: '/crypto-bom', icon: Shield },
-        { name: 'Crypto Inventory', path: '/crypto-inventory', icon: Binary },
+        { name: '⚛️ Quantum Risk & Mosca', path: '/quantum-risk', icon: Flame, badge: 'CRQC' },
+        { name: '🧪 PQC Migration Lab', path: '/pqc', icon: Cpu, badge: 'FIPS 203' },
+        { name: 'Crypto-BOM (CycloneDX)', path: '/crypto-bom', icon: Shield, badge: '1.6' },
+        { name: '🔬 Strength & PRNG Testing', path: '/crypto-testing', icon: Zap },
         { name: 'Findings Explorer', path: '/findings', icon: FileSearch },
-        { name: 'Risk Analytics', path: '/risk', icon: Flame },
-        { name: 'PQC Readiness', path: '/pqc', icon: Cpu, badge: 'NIST' },
         { name: 'TLS & Certificates', path: '/certificates', icon: KeyRound },
       ]
     },
     {
       group: 'Intelligence & Compliance',
       items: [
-        { name: 'AI Security Analyst', path: '/ai-analyst', icon: Bot, badge: 'AI' },
+        { name: 'AI Security Copilot', path: '/ai-analyst', icon: Bot, badge: 'AI' },
         { name: 'Assessment Reports', path: '/reports', icon: FileBarChart },
         { name: 'Audit Trail', path: '/audit-logs', icon: Activity },
       ]
@@ -115,7 +119,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
           </NavLink>
         </div>
 
-        {/* Organization Badge / Switcher */}
+        {/* Organization Badge */}
         <div className="px-4 py-3 border-b border-slate-800/50 bg-navy-950/40">
           <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
             <span className="uppercase tracking-wider text-[10px] font-mono font-semibold">Tenant</span>
@@ -147,7 +151,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
                         isActive
                           ? 'bg-brand-600/20 text-cyan-300 border border-brand-500/30 shadow-sm font-semibold'
                           : item.highlight
-                          ? 'text-cyan-400 hover:bg-cyan-500/10 border border-cyan-500/20'
+                          ? 'text-cyan-400 hover:bg-cyan-500/10 border border-cyan-500/30 bg-cyan-500/5'
                           : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                       }`
                     }
@@ -168,26 +172,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
           ))}
         </div>
 
-        {/* Demo Scenario Quick Action */}
+        {/* Quick Launch Digital Twin Feature Box */}
         <div className="p-3 border-t border-slate-800/80 bg-navy-950/60">
-          <div className="p-3 rounded-xl border border-cyan-500/20 bg-cyan-500/5 space-y-2">
+          <div className="p-3 rounded-xl border border-cyan-500/30 bg-gradient-to-tr from-cyan-950/40 to-purple-950/20 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-cyan-300 font-mono flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-cyan-400" />
-                CryptoTalk Demo
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                Crypto Risk Twin
               </span>
-              <span className="text-[9px] font-mono uppercase text-cyan-400 bg-cyan-500/20 px-1 rounded">
-                Ref App
+              <span className="text-[9px] font-mono uppercase text-cyan-300 bg-cyan-500/20 px-1 rounded">
+                Live
               </span>
             </div>
             <p className="text-[11px] text-slate-400 leading-tight">
-              Analyze reference secure communications application in 1 click.
+              Visualize full asset topology → Shor threat → PQC roadmap.
             </p>
             <button
-              onClick={() => navigate('/demo/cryptotalk')}
-              className="w-full py-1.5 text-xs font-semibold rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 transition-colors"
+              onClick={() => navigate('/digital-twin')}
+              className="w-full py-1.5 text-xs font-semibold rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 transition-colors font-mono"
             >
-              Analyze CryptoTalk
+              Open Digital Twin
             </button>
           </div>
         </div>

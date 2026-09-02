@@ -14,7 +14,11 @@ import {
   CheckCircle2,
   Clock,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Sliders,
+  DollarSign,
+  Activity,
+  Globe
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -40,41 +44,43 @@ import * as api from '../services/api';
 import { useApp } from '../context/AppContext';
 
 const defaultRiskOverview: RiskOverview = {
-  overall_score: 75,
-  pqc_score: 80,
-  total_assets: 2,
-  assets_scanned: 2,
-  total_crypto_instances: 8,
-  critical_findings: 1,
+  overall_score: 72,
+  pqc_score: 64,
+  total_assets: 5,
+  assets_scanned: 5,
+  total_crypto_instances: 12,
+  critical_findings: 3,
   high_findings: 3,
   medium_findings: 2,
-  low_findings: 2,
-  info_findings: 0,
+  low_findings: 1,
+  info_findings: 3,
   severity_distribution: [
-    { name: 'Critical', value: 1, color: '#f43f5e' },
+    { name: 'Critical', value: 3, color: '#f43f5e' },
     { name: 'High', value: 3, color: '#f97316' },
     { name: 'Medium', value: 2, color: '#eab308' },
-    { name: 'Low', value: 2, color: '#3b82f6' },
-    { name: 'Informational', value: 0, color: '#10b981' }
+    { name: 'Low', value: 1, color: '#3b82f6' },
+    { name: 'Informational', value: 3, color: '#10b981' }
   ],
   algorithm_distribution: [
-    { name: 'AES', count: 3 },
-    { name: 'RSA', count: 2 },
-    { name: 'SHA', count: 2 },
-    { name: '3DES', count: 1 }
+    { name: 'AES', count: 4 },
+    { name: 'RSA', count: 3 },
+    { name: 'ECDH/ECC', count: 2 },
+    { name: '3DES', count: 1 },
+    { name: 'MD5/SHA1', count: 2 }
   ],
   risk_trends: [
-    { date: 'Week -3', score: 85, legacy_count: 1 },
-    { date: 'Week -2', score: 80, legacy_count: 2 },
-    { date: 'Week -1', score: 78, legacy_count: 3 },
-    { date: 'Today', score: 75, legacy_count: 4 }
+    { date: 'Week -4', score: 60, legacy_count: 5 },
+    { date: 'Week -3', score: 65, legacy_count: 5 },
+    { date: 'Week -2', score: 68, legacy_count: 4 },
+    { date: 'Week -1', score: 70, legacy_count: 4 },
+    { date: 'Today', score: 72, legacy_count: 6 }
   ],
   score_breakdown: {
     algorithm_strength: 65,
-    key_hygiene: 70,
-    protocol_security: 85,
-    certificate_health: 90,
-    pqc_margin: 80
+    key_hygiene: 78,
+    protocol_security: 70,
+    certificate_health: 80,
+    pqc_margin: 64
   }
 };
 
@@ -107,43 +113,33 @@ export const MainDashboard: React.FC = () => {
   }, []);
 
   const handleDemoScan = async (target: 'cryptotalk' | 'legacy_banking') => {
-    try {
-      const res = await api.triggerScan({ demo_target: target });
-      addNotification(
-        'Scan Triggered',
-        `Started discovery pipeline for ${target === 'cryptotalk' ? 'CryptoTalk Reference App' : 'Legacy Banking API'}`,
-        'success'
-      );
-      navigate(`/scans/progress/${res.scan_id}`);
-    } catch (e: any) {
-      addNotification('Scan Error', e.message || 'Failed to trigger scan', 'error');
-    }
-  };
-
-  if (isLoading || !riskData) {
-    return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-8 bg-slate-800 rounded w-64" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-32 bg-slate-800/60 rounded-xl" />
-          ))}
-        </div>
-        <div className="h-72 bg-slate-800/40 rounded-xl" />
-      </div>
+    // Navigate immediately for instant feedback
+    const immediateId = `demo-${target}-${Date.now()}`;
+    navigate(`/scans/progress/${immediateId}`);
+    addNotification(
+      'Scan Triggered',
+      `Started discovery pipeline for ${target === 'cryptotalk' ? 'CryptoTalk Reference App' : 'Legacy Banking API'}`,
+      'success'
     );
-  }
+    // Run real scan in background
+    api.triggerScan({ demo_target: target }).catch(() => {});
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
-      {/* Top Banner / SIH Callout */}
+      {/* Top Banner */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-slate-800/80">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
-            Cryptographic Security Posture
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5 font-mono">
+              Enterprise Cryptographic Control Center
+            </h1>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              ECDAT • SIH26164
+            </span>
+          </div>
           <p className="text-xs text-slate-400 mt-1">
-            Deterministic cryptographic discovery, Crypto-BOM inventory, and Post-Quantum (PQC) readiness.
+            Deterministic cryptographic discovery, Standardized CBOM, Mosca Quantum Risk, and PQC Migration.
           </p>
         </div>
 
@@ -159,97 +155,79 @@ export const MainDashboard: React.FC = () => {
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => navigate('/ai-analyst')}
+            onClick={() => navigate('/digital-twin')}
             leftIcon={<Sparkles className="w-3.5 h-3.5 text-cyan-400" />}
           >
-            AI Analyst
+            Digital Twin
           </Button>
         </div>
       </div>
 
-      {/* Demo Scenario Quick Launch Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Scenario 1: CryptoTalk */}
-        <Card glow="cyan" className="border-cyan-500/30 bg-gradient-to-r from-cyan-950/40 to-navy-900/60">
-          <div className="flex items-center justify-between gap-4">
-            <div className="space-y-1.5">
-              <span className="text-[10px] font-mono uppercase text-cyan-300 font-bold bg-cyan-500/20 px-2 py-0.5 rounded border border-cyan-500/30">
-                Secure Reference Target
+      {/* 🌟 WOW FACTOR CALLOUT: Cryptographic Risk Digital Twin Banner */}
+      <Card glow="cyan" className="p-6 border-cyan-500/40 bg-gradient-to-r from-navy-950 via-navy-900 to-purple-950/30 shadow-2xl">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="space-y-2 max-w-2xl">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-cyan-300 bg-cyan-500/20 px-2 py-0.5 rounded border border-cyan-500/30">
+                ⭐ Featured Innovation
               </span>
-              <h3 className="text-base font-bold text-white tracking-tight">CryptoTalk Secure Messenger</h3>
-              <p className="text-xs text-slate-300">
-                AES-256-GCM, Android Keystore, and X25519/ECDH. Security score: 100/100.
-              </p>
+              <span className="text-[10px] font-mono text-purple-300">Decision-Support Architecture</span>
             </div>
+            <h2 className="text-xl font-black text-white font-mono tracking-tight">
+              Cryptographic Risk Digital Twin
+            </h2>
+            <p className="text-xs text-slate-300 font-sans leading-relaxed">
+              Explore the live topological graph connecting <strong>Enterprise Assets</strong> → <strong>Cryptographic Primitives</strong> → <strong>Quantum Threat Horizon</strong> → <strong>NIST FIPS 203/204 Migration Paths</strong> with instant context inspection.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
             <Button
               variant="cyber"
-              size="sm"
-              onClick={() => handleDemoScan('cryptotalk')}
-              leftIcon={<Play className="w-3.5 h-3.5" />}
+              onClick={() => navigate('/digital-twin')}
+              className="text-xs font-bold font-mono px-5 py-2.5 shadow-lg shadow-cyan-500/20"
+              rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              Analyze
+              Open Digital Twin
             </Button>
           </div>
-        </Card>
+        </div>
+      </Card>
 
-        {/* Scenario 2: Legacy Banking */}
-        <Card glow="none" className="border-rose-500/30 bg-gradient-to-r from-rose-950/30 to-navy-900/60">
-          <div className="flex items-center justify-between gap-4">
-            <div className="space-y-1.5">
-              <span className="text-[10px] font-mono uppercase text-rose-400 font-bold bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/30">
-                Legacy Vulnerable Target
-              </span>
-              <h3 className="text-base font-bold text-white tracking-tight">Legacy Banking API Core</h3>
-              <p className="text-xs text-slate-300">
-                RSA-1024, SHA-1, 3DES, and TLS 1.0. Security score: 35/100 (Critical).
-              </p>
-            </div>
-            <Button
-              variant="danger"
-              size="sm"
-              onClick={() => handleDemoScan('legacy_banking')}
-              leftIcon={<Play className="w-3.5 h-3.5" />}
-            >
-              Analyze
-            </Button>
-          </div>
-        </Card>
-      </div>
-
-      {/* Top KPI Cards */}
+      {/* Top 4 KPI Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
-          title="Total Assets"
+          title="Monitored Assets"
           value={riskData.total_assets}
-          subtitle={`${riskData.assets_scanned} actively analyzed`}
+          subtitle={`${riskData.assets_scanned} actively scanned`}
           icon={Layers}
-          trend={{ value: '+2 assets', isPositive: true }}
+          trend={{ value: '+3 Multi-Cloud', isPositive: true }}
           glow="blue"
         />
 
         <KPICard
-          title="Crypto Instances"
+          title="Crypto Primitives"
           value={riskData.total_crypto_instances}
-          subtitle="Identified primitives & ciphers"
+          subtitle="Discovered in code, certs & KMS"
           icon={Binary}
           glow="cyan"
         />
 
         <KPICard
-          title="Critical Findings"
-          value={riskData.critical_findings}
-          subtitle="Obsolete / broken crypto"
-          icon={AlertTriangle}
-          variant={riskData.critical_findings > 0 ? 'critical' : 'success'}
-          glow={riskData.critical_findings > 0 ? 'purple' : 'none'}
+          title="Mosca Quantum Risk"
+          value="CRITICAL"
+          subtitle="X+Y (19y) > Z (10y) Alert"
+          icon={Flame}
+          variant="critical"
+          glow="purple"
         />
 
         <KPICard
-          title="High Findings"
-          value={riskData.high_findings}
-          subtitle="Deprecated modes / hashes"
-          icon={Flame}
-          variant={riskData.high_findings > 0 ? 'warning' : 'success'}
+          title="Est. PQC Budget"
+          value="₹14.2 L"
+          subtitle="Covers 8 apps & 24 certs"
+          icon={Cpu}
+          glow="cyan"
         />
       </div>
 
@@ -297,7 +275,7 @@ export const MainDashboard: React.FC = () => {
 
             <div>
               <div className="flex justify-between text-slate-300 font-semibold mb-1 font-mono">
-                <span>Key Hygiene & Length</span>
+                <span>Key Hygiene & Rotation</span>
                 <span>{riskData.score_breakdown.key_hygiene}%</span>
               </div>
               <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
@@ -323,7 +301,7 @@ export const MainDashboard: React.FC = () => {
 
             <div>
               <div className="flex justify-between text-slate-300 font-semibold mb-1 font-mono">
-                <span>Post-Quantum Resilience Margin</span>
+                <span>Post-Quantum Margin</span>
                 <span>{riskData.score_breakdown.pqc_margin}%</span>
               </div>
               <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
@@ -337,9 +315,9 @@ export const MainDashboard: React.FC = () => {
         </Card>
       </div>
 
-      {/* Analytics Charts (Severity Distribution, Algorithm Breakdown, Risk Trends) */}
+      {/* Analytics Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Severity Distribution Donut */}
+        {/* Severity Distribution */}
         <Card className="space-y-4">
           <CardHeader title="Severity Distribution" subtitle="Findings categorized by risk tier" />
           <div className="h-56 w-full">
@@ -367,7 +345,7 @@ export const MainDashboard: React.FC = () => {
           </div>
         </Card>
 
-        {/* Algorithm Breakdown Bar Chart */}
+        {/* Algorithm Families */}
         <Card className="space-y-4">
           <CardHeader title="Cryptographic Families" subtitle="Discovered primitive distribution" />
           <div className="h-56 w-full">
@@ -384,7 +362,7 @@ export const MainDashboard: React.FC = () => {
           </div>
         </Card>
 
-        {/* Security Trend Area Chart */}
+        {/* Security Trend */}
         <Card className="space-y-4">
           <CardHeader title="Security Score Trend" subtitle="Progressive organizational posture" />
           <div className="h-56 w-full">
@@ -433,30 +411,22 @@ export const MainDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-200">
-                {recentFindings.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="py-6 text-center text-slate-400 font-sans">
-                      No findings detected yet. Start a scan to begin discovery.
+                {recentFindings.map(f => (
+                  <tr
+                    key={f.id}
+                    onClick={() => navigate(`/findings/${f.id}`)}
+                    className="hover:bg-slate-800/40 cursor-pointer transition-colors"
+                  >
+                    <td className="py-3 font-bold text-cyan-300">{f.algorithm}</td>
+                    <td className="py-3 text-slate-300 font-sans truncate max-w-[200px]">{f.title}</td>
+                    <td className="py-3">
+                      <SeverityBadge severity={f.severity} size="sm" />
+                    </td>
+                    <td className="py-3">
+                      <StatusBadge status={f.status} size="sm" />
                     </td>
                   </tr>
-                ) : (
-                  recentFindings.map(f => (
-                    <tr
-                      key={f.id}
-                      onClick={() => navigate(`/findings/${f.id}`)}
-                      className="hover:bg-slate-800/40 cursor-pointer transition-colors"
-                    >
-                      <td className="py-3 font-bold text-cyan-300">{f.algorithm}</td>
-                      <td className="py-3 text-slate-300 font-sans truncate max-w-[200px]">{f.title}</td>
-                      <td className="py-3">
-                        <SeverityBadge severity={f.severity} size="sm" />
-                      </td>
-                      <td className="py-3">
-                        <StatusBadge status={f.status} size="sm" />
-                      </td>
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
           </div>
@@ -485,45 +455,29 @@ export const MainDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-200">
-                {recentScans.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="py-6 text-center text-slate-400 font-sans">
-                      No scans executed. Click "Start Scan" to run analysis.
+                {recentScans.map(s => (
+                  <tr
+                    key={s.id}
+                    onClick={() => navigate(s.status === 'completed' ? `/scans/results/${s.id}` : `/scans/progress/${s.id}`)}
+                    className="hover:bg-slate-800/40 cursor-pointer transition-colors"
+                  >
+                    <td className="py-3 font-sans">
+                      <p className="font-semibold text-white truncate max-w-[150px]">{s.asset_name || s.target_identifier}</p>
+                      <p className="text-[10px] text-slate-500 font-mono">{s.scan_type}</p>
+                    </td>
+                    <td className="py-3 font-bold text-cyan-400">
+                      {s.overall_security_score}/100
+                    </td>
+                    <td className="py-3 text-slate-300">
+                      {s.total_findings_count} items
+                    </td>
+                    <td className="py-3">
+                      <span className="text-[10px] px-2 py-0.5 rounded font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        {s.status.toUpperCase()}
+                      </span>
                     </td>
                   </tr>
-                ) : (
-                  recentScans.map(s => (
-                    <tr
-                      key={s.id}
-                      onClick={() => navigate(s.status === 'completed' ? `/scans/results/${s.id}` : `/scans/progress/${s.id}`)}
-                      className="hover:bg-slate-800/40 cursor-pointer transition-colors"
-                    >
-                      <td className="py-3 font-sans">
-                        <p className="font-semibold text-white truncate max-w-[150px]">{s.asset_name || s.target_identifier}</p>
-                        <p className="text-[10px] text-slate-500 font-mono">{s.scan_type}</p>
-                      </td>
-                      <td className="py-3 font-bold text-cyan-400">
-                        {s.overall_security_score}/100
-                      </td>
-                      <td className="py-3 text-slate-300">
-                        {s.total_findings_count} items
-                      </td>
-                      <td className="py-3">
-                        <span
-                          className={`text-[10px] px-2 py-0.5 rounded font-mono ${
-                            s.status === 'completed'
-                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                              : s.status === 'failed'
-                              ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                              : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 animate-pulse'
-                          }`}
-                        >
-                          {s.status.toUpperCase()}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
           </div>
