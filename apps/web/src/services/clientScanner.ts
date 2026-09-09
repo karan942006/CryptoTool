@@ -671,22 +671,51 @@ export async function executeClientSideScan(
           if (rule.regex.test(line)) {
             fileFindingsCount++;
 
-            // Extract key size indicators if present in context
+            // Extract key size indicators with context-aware parameter parsing (avoid false positives)
             let keySize: number | null = null;
             let keySizeStr = 'unknown';
 
             if (rule.algorithm === 'RSA' || line.includes('RSA')) {
-              if (line.includes('1024') || file.content.includes('1024')) { keySize = 1024; keySizeStr = '1024-bit'; }
-              else if (line.includes('4096') || file.content.includes('4096')) { keySize = 4096; keySizeStr = '4096-bit'; }
-              else if (line.includes('3072') || file.content.includes('3072')) { keySize = 3072; keySizeStr = '3072-bit'; }
-              else { keySize = 2048; keySizeStr = '2048-bit'; }
+              // Context-aware extraction: look for parameter assignment or function argument in line
+              const rsaMatch = line.match(/(?:initialize|GenerateKey|key_size|modulusLength|genrsa|keysize|new\s+RSACryptoServiceProvider)\s*(?:\(|[:=]|\s+)\s*(\d{3,5})/i)
+                || line.match(/\b(1024|2048|3072|4096)\b(?:\s*bit|\s*-bit|\s*bits|\s*,\s*|\s*\))/i);
+
+              if (rsaMatch) {
+                const parsed = parseInt(rsaMatch[1], 10);
+                if ([512, 768, 1024, 2048, 3072, 4096, 8192].includes(parsed)) {
+                  keySize = parsed;
+                  keySizeStr = `${parsed}-bit`;
+                }
+              }
+
+              if (!keySize) {
+                // Check if 1024 / 2048 / 4096 / 3072 specifically appears as an explicit word boundary in this cryptographic line
+                if (/\b1024\b/.test(line)) { keySize = 1024; keySizeStr = '1024-bit'; }
+                else if (/\b4096\b/.test(line)) { keySize = 4096; keySizeStr = '4096-bit'; }
+                else if (/\b3072\b/.test(line)) { keySize = 3072; keySizeStr = '3072-bit'; }
+                else if (/\b2048\b/.test(line)) { keySize = 2048; keySizeStr = '2048-bit'; }
+                else { keySize = 2048; keySizeStr = '2048-bit (Standard Default)'; }
+              }
             } else if (rule.algorithm.includes('AES') || line.includes('AES')) {
-              if (line.includes('128')) { keySize = 128; keySizeStr = '128-bit'; }
+              const aesMatch = line.match(/(?:aes|AES)[-_]?(128|192|256)/i)
+                || line.match(/(?:keysize|key_size|initialize)\s*(?:\(|[:=]|\s+)\s*(128|192|256)/i);
+              if (aesMatch) {
+                keySize = parseInt(aesMatch[1], 10);
+                keySizeStr = `${keySize}-bit`;
+              } else if (line.includes('128')) { keySize = 128; keySizeStr = '128-bit'; }
               else if (line.includes('192')) { keySize = 192; keySizeStr = '192-bit'; }
-              else { keySize = 256; keySizeStr = '256-bit'; }
+              else { keySize = 256; keySizeStr = '256-bit (Standard)'; }
             } else if (rule.algorithm.includes('ECC') || rule.algorithm.includes('ECDSA')) {
-              keySize = 256;
-              keySizeStr = '256-bit (P-256)';
+              if (line.includes('384') || line.includes('P-384') || line.includes('secp384r1')) {
+                keySize = 384;
+                keySizeStr = '384-bit (P-384 / secp384r1)';
+              } else if (line.includes('521') || line.includes('P-521')) {
+                keySize = 521;
+                keySizeStr = '521-bit (P-521)';
+              } else {
+                keySize = 256;
+                keySizeStr = '256-bit (P-256 / secp256r1)';
+              }
             }
 
             let sev = rule.severity;
@@ -767,6 +796,54 @@ export async function executeClientSideScan(
               evidence: sanitizedSnippet,
               created_at: new Date().toISOString()
             });
+          }
+        }
+      }
+    }
+
+    // ── Shannon Entropy Secret Analysis Pass ─────────────────────────────────
+    if (['js', 'ts', 'jsx', 'tsx', 'py', 'java', 'kt', 'go', 'rs', 'c', 'cpp', 'cs', 'env', 'json', 'yaml', 'properties'].includes(ext)) {
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.includes('//') && line.indexOf('//') < 5) continue; // Skip comments
+        const tokenMatches = line.match(/["'`]([A-Za-z0-9+/=_-]{28,128})["'`]/g);
+        if (tokenMatches) {
+          for (const tm of tokenMatches) {
+            const rawToken = tm.replace(/["'`]/g, '');
+            if (!rawToken.includes('/') && !rawToken.includes('\\') && !rawToken.includes('http') && !rawToken.includes('xmlns')) {
+              const entropy = calculateShannonEntropy(rawToken);
+              if (entropy >= 4.45) {
+                fileFindingsCount++;
+                fileWorstSeverity = 'critical';
+                const findingId = 'find-entropy-' + Math.random().toString(36).substring(2, 11);
+                findings.push({
+                  id: findingId,
+                  scan_id: scanId,
+                  asset_id: assetId,
+                  asset_name: targetName,
+                  organization_id: 'default-org',
+                  rule_id: 'CRYPTO-ENTROPY-001',
+                  title: 'High-Entropy Hardcoded Cryptographic Key / Secret Detected',
+                  description: `High Shannon Entropy string detected (H = ${entropy.toFixed(2)} bits/symbol, length ${rawToken.length}). High probability of hardcoded API secret, private key, or symmetric master key.`,
+                  category: 'Key Management & Secrets',
+                  algorithm: 'High-Entropy Secret',
+                  key_size_str: `${rawToken.length * 8}-bit entropy material`,
+                  file_path: file.path,
+                  line_number: i + 1,
+                  code_snippet_redacted: line.replace(rawToken, '[REDACTED_HIGH_ENTROPY_SECRET]').trim(),
+                  language: ext,
+                  severity: 'critical',
+                  confidence: 'high',
+                  status: 'open',
+                  quantum_vulnerable: false,
+                  pqc_priority: 'immediate',
+                  remediation_deterministic: 'Rotate this credential immediately. Externalize keys to a Secrets Vault or Cloud KMS.',
+                  is_demo: false,
+                  created_at: new Date().toISOString()
+                });
+                break;
+              }
+            }
           }
         }
       }
