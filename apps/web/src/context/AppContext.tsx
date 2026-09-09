@@ -84,9 +84,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       console.warn('Backend not yet reachable, using offline fallback profile', e);
       const defaultOrg: Organization = {
         id: 'a0000000-0000-0000-0000-000000000001',
-        name: 'National Cyber Defense Agency',
-        slug: 'national-cyber-defense',
-        description: 'Authorized Enterprise Security Assessment Unit',
+        name: 'Enterprise Security Architecture & Governance',
+        slug: 'enterprise-security',
+        description: 'Authorized Enterprise Security Assessment Platform',
         tier: 'enterprise',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),

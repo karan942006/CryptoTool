@@ -46,9 +46,9 @@ export async function fetchOrganizations(): Promise<Organization[]> {
   } catch {}
   return [{
     id: 'a0000000-0000-0000-0000-000000000001',
-    name: 'National Cyber Defense Agency',
-    slug: 'national-cyber-defense',
-    description: 'Authorized Enterprise Cryptographic Discovery & Analysis Platform (SIH26164)',
+    name: 'Enterprise Security Architecture & Governance',
+    slug: 'enterprise-security',
+    description: 'Authorized Enterprise Cryptographic Discovery & Analysis Platform',
     tier: 'enterprise',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -66,15 +66,15 @@ export async function fetchAuthMe(): Promise<{ user: UserMember; organization: O
       organization_id: 'a0000000-0000-0000-0000-000000000001',
       user_id: 'usr-001',
       email: 'security.analyst@cryptotool.internal',
-      full_name: 'Chief Cryptography Auditor',
+      full_name: 'Chief Information Security Officer',
       role: 'owner',
       created_at: new Date().toISOString()
     },
     organization: {
       id: 'a0000000-0000-0000-0000-000000000001',
-      name: 'National Cyber Defense Agency',
-      slug: 'national-cyber-defense',
-      description: 'Authorized Enterprise Cryptographic Discovery & Analysis Platform (SIH26164)',
+      name: 'Enterprise Security Architecture & Governance',
+      slug: 'enterprise-security',
+      description: 'Authorized Enterprise Cryptographic Discovery & Analysis Platform',
       tier: 'enterprise',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -522,7 +522,7 @@ export async function fetchCertificates(): Promise<CertificateEntry[]> {
       endpoint: 'api.cryptotool.internal:443',
       tls_version: 'TLSv1.3',
       cipher_suite: 'TLS_AES_256_GCM_SHA384',
-      subject: 'CN=api.cryptotool.internal, O=National Cyber Defense, C=US',
+      subject: 'CN=api.cryptotool.internal, O=Enterprise Secure Core, C=US',
       issuer: 'CN=DigiCert Global Root CA, O=DigiCert Inc, C=US',
       valid_from: '2026-01-01T00:00:00Z',
       valid_until: '2026-12-31T23:59:59Z',
@@ -565,11 +565,11 @@ export async function createReport(scanId: string, title?: string): Promise<Asse
     title: title || `Cryptographic Assessment Report — ${scan.asset_name || 'Target Asset'}`,
     report_type: 'executive_summary',
     format: 'pdf',
-    generated_by: 'Chief Cryptography Auditor',
+    generated_by: 'Chief Information Security Officer',
     summary_data: {
       metadata: {
         title: title || `Assessment: ${scan.asset_name}`,
-        organization: 'National Cyber Defense Agency',
+        organization: 'Enterprise Security Architecture',
         asset_name: scan.asset_name,
         scan_date: scan.completed_at || new Date().toISOString()
       },

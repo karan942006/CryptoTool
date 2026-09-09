@@ -311,7 +311,7 @@ export const AddAssetPage: React.FC = () => {
                 type="text"
                 value={url}
                 onChange={e => setUrl(e.target.value)}
-                placeholder="https://service.authority.gov.in"
+                placeholder="https://api.enterprise.internal"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-700 bg-navy-950 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-cyan-400 font-mono"
               />
             </div>

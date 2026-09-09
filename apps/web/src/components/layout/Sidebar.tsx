@@ -128,7 +128,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
             </span>
           </div>
           <p className="text-xs font-semibold text-slate-200 truncate font-mono">
-            {organization?.name || 'National Cyber Defense Agency'}
+            {organization?.name || 'Enterprise Security Architecture'}
           </p>
         </div>
 

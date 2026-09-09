@@ -23,26 +23,118 @@ import * as api from '../services/api';
 import { useApp } from '../context/AppContext';
 
 export const TeamUsersPage: React.FC = () => {
-  const { user, organization } = useApp();
+  const { user, organization, addNotification } = useApp();
+  const [members, setMembers] = useState([
+    { name: user?.full_name || 'Chief Information Security Officer', email: user?.email || 'admin@cryptotool.internal', role: 'Owner / Administrator', department: 'Enterprise Security Architecture', lastActive: 'Now' },
+    { name: 'Dr. Sarah Chen', email: 'sarah.chen@enterprise.internal', role: 'Principal Cryptographer', department: 'Applied Cryptography & PQC Lab', lastActive: '15 mins ago' },
+    { name: 'Marcus Vance', email: 'marcus.vance@enterprise.internal', role: 'PQC Migration Lead', department: 'Infrastructure Modernization', lastActive: '2 hours ago' },
+    { name: 'Elena Rostova', email: 'elena.rostova@enterprise.internal', role: 'DevSecOps Engineer', department: 'CI/CD Security Engineering', lastActive: '1 day ago' },
+    { name: 'David Kim', email: 'david.kim@enterprise.internal', role: 'Compliance Auditor', department: 'Regulatory & Governance', lastActive: '3 days ago' },
+  ]);
 
-  const members = [
-    { name: user?.full_name || 'Chief Security Officer', email: user?.email || 'admin@cryptotool.internal', role: 'Owner / Administrator', lastActive: 'Now' },
-    { name: 'Dr. A. Sharma', email: 'sharma.crypto@authority.gov.in', role: 'Security Analyst', lastActive: '2 hours ago' },
-    { name: 'PQC Migration Lead', email: 'pqc.audit@authority.gov.in', role: 'Security Analyst', lastActive: '1 day ago' },
-    { name: 'Compliance Auditor', email: 'auditor@gov.in', role: 'Viewer', lastActive: '3 days ago' },
-  ];
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [newMemberName, setNewMemberName] = useState('');
+  const [newMemberEmail, setNewMemberEmail] = useState('');
+  const [newMemberRole, setNewMemberRole] = useState('Security Analyst');
+  const [newMemberDept, setNewMemberDept] = useState('Security Operations');
+
+  const handleAddMember = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMemberName || !newMemberEmail) return;
+    setMembers(prev => [
+      ...prev,
+      {
+        name: newMemberName,
+        email: newMemberEmail,
+        role: newMemberRole,
+        department: newMemberDept,
+        lastActive: 'Invited'
+      }
+    ]);
+    addNotification('Member Added', `Invited ${newMemberName} (${newMemberEmail}) to team.`, 'success');
+    setNewMemberName('');
+    setNewMemberEmail('');
+    setShowInviteModal(false);
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
-      <div className="pb-2 border-b border-slate-800">
-        <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-          <Users className="w-6 h-6 text-brand-400" />
-          Enterprise Team & Role-Based Access Control (RBAC)
-        </h1>
-        <p className="text-xs text-slate-400 mt-1">
-          Manage organizational members, security analyst authorizations, and tenant isolation policies.
-        </p>
+      <div className="pb-2 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+            <Users className="w-6 h-6 text-brand-400" />
+            Enterprise Team & Role-Based Access Control (RBAC)
+          </h1>
+          <p className="text-xs text-slate-400 mt-1">
+            Manage enterprise organization members, security analyst authorizations, and tenant isolation policies.
+          </p>
+        </div>
+
+        <Button variant="cyber" size="sm" onClick={() => setShowInviteModal(!showInviteModal)}>
+          + Invite Team Member
+        </Button>
       </div>
+
+      {showInviteModal && (
+        <Card className="p-5 border-cyan-500/40 bg-navy-950 space-y-4 font-mono text-xs shadow-2xl animate-in fade-in">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <span className="font-bold text-cyan-300">Invite New Enterprise Team Member</span>
+            <button onClick={() => setShowInviteModal(false)} className="text-slate-400 hover:text-white">✕</button>
+          </div>
+          <form onSubmit={handleAddMember} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-slate-300 block mb-1">Full Name</label>
+              <input
+                type="text"
+                placeholder="e.g. Rachel Adams"
+                value={newMemberName}
+                onChange={e => setNewMemberName(e.target.value)}
+                className="w-full p-2 rounded bg-navy-900 border border-slate-800 text-white"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-slate-300 block mb-1">Corporate Email Address</label>
+              <input
+                type="email"
+                placeholder="rachel.adams@enterprise.internal"
+                value={newMemberEmail}
+                onChange={e => setNewMemberEmail(e.target.value)}
+                className="w-full p-2 rounded bg-navy-900 border border-slate-800 text-white"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-slate-300 block mb-1">Assigned Role</label>
+              <select
+                value={newMemberRole}
+                onChange={e => setNewMemberRole(e.target.value)}
+                className="w-full p-2 rounded bg-navy-900 border border-slate-800 text-white"
+              >
+                <option value="Security Analyst">Security Analyst</option>
+                <option value="Cryptographic Engineer">Cryptographic Engineer</option>
+                <option value="DevSecOps Lead">DevSecOps Lead</option>
+                <option value="Compliance Auditor">Compliance Auditor</option>
+                <option value="Administrator">Administrator</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-slate-300 block mb-1">Department</label>
+              <input
+                type="text"
+                placeholder="e.g. Cloud Security Team"
+                value={newMemberDept}
+                onChange={e => setNewMemberDept(e.target.value)}
+                className="w-full p-2 rounded bg-navy-900 border border-slate-800 text-white"
+              />
+            </div>
+            <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
+              <Button type="button" size="sm" variant="secondary" onClick={() => setShowInviteModal(false)}>Cancel</Button>
+              <Button type="submit" size="sm" variant="cyber">Send Invitation</Button>
+            </div>
+          </form>
+        </Card>
+      )}
 
       <Card>
         <div className="overflow-x-auto">
@@ -50,9 +142,10 @@ export const TeamUsersPage: React.FC = () => {
             <thead>
               <tr className="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
                 <th className="pb-3">Member Name</th>
-                <th className="pb-3">Email Address</th>
+                <th className="pb-3">Corporate Email</th>
+                <th className="pb-3">Department</th>
                 <th className="pb-3">Assigned Role</th>
-                <th className="pb-3">Last Active</th>
+                <th className="pb-3">Status / Last Active</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 text-slate-200">
@@ -60,12 +153,13 @@ export const TeamUsersPage: React.FC = () => {
                 <tr key={i}>
                   <td className="py-3.5 font-sans font-semibold text-white">{m.name}</td>
                   <td className="py-3.5 text-slate-300">{m.email}</td>
+                  <td className="py-3.5 text-slate-400 font-sans">{m.department}</td>
                   <td className="py-3.5">
-                    <span className="text-[10px] px-2 py-0.5 rounded font-mono bg-brand-500/10 text-cyan-300 border border-brand-500/20">
+                    <span className="text-[10px] px-2 py-0.5 rounded font-mono bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
                       {m.role}
                     </span>
                   </td>
-                  <td className="py-3.5 text-slate-500 text-[11px]">{m.lastActive}</td>
+                  <td className="py-3.5 text-slate-400 text-[11px]">{m.lastActive}</td>
                 </tr>
               ))}
             </tbody>
