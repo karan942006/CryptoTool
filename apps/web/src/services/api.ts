@@ -16,7 +16,6 @@ import {
 import {
   executeClientSideScan,
   extractFilesFromZip,
-  DEMO_CODEBASES,
   supabaseClient,
   ScannedFileInfo
 } from './clientScanner';
@@ -25,7 +24,7 @@ import { explainFindingWithGemini, askGeminiCopilot, getAISettings, saveAISettin
 
 const API_BASE = '/api';
 
-// ─── Health & Organizations ──────────────────────────────────────────────────
+// â”€â”€â”€ Health & Organizations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function fetchHealth(): Promise<{ status: string; ai_configured: boolean; version: string }> {
   try {
     const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(1500) });
@@ -82,7 +81,7 @@ export async function fetchAuthMe(): Promise<{ user: UserMember; organization: O
   };
 }
 
-// ─── Assets ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Assets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function fetchAssets(): Promise<Asset[]> {
   try {
     const res = await fetch(`${API_BASE}/assets`, { signal: AbortSignal.timeout(1500) });
@@ -92,40 +91,7 @@ export async function fetchAssets(): Promise<Asset[]> {
   const local = localStorage.getItem('cryptotool_assets');
   if (local) return JSON.parse(local);
 
-  const defaults: Asset[] = [
-    {
-      id: 'ast-001',
-      organization_id: 'a0000000-0000-0000-0000-000000000001',
-      name: 'CryptoTalk Secure Messenger',
-      description: 'E2EE Mobile application utilizing AES-256-GCM, Android Keystore StrongBox, and X25519',
-      type: 'mobile_app',
-      owner: 'Mobile Security Team',
-      environment: 'production',
-      criticality: 'critical',
-      exposure: 'external',
-      tags: ['reference-app', 'e2ee', 'android'],
-      is_demo: true,
-      authorization_confirmed: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: 'ast-002',
-      organization_id: 'a0000000-0000-0000-0000-000000000001',
-      name: 'Legacy Core Banking API',
-      description: 'Legacy transaction engine with outdated cryptography (RSA-1024, 3DES, MD5, SHA-1)',
-      type: 'api',
-      owner: 'Core Banking Infrastructure',
-      environment: 'production',
-      criticality: 'critical',
-      exposure: 'external',
-      tags: ['legacy', 'banking', 'pci-dss'],
-      is_demo: true,
-      authorization_confirmed: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
-  ];
+  const defaults: Asset[] = [];
   localStorage.setItem('cryptotool_assets', JSON.stringify(defaults));
   return defaults;
 }
@@ -162,7 +128,7 @@ export async function createAsset(data: Partial<Asset>): Promise<Asset> {
   return newAsset;
 }
 
-// ─── Scans & Execution ────────────────────────────────────────────────────────
+// â”€â”€â”€ Scans & Execution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function fetchScans(): Promise<Scan[]> {
   try {
     const res = await fetch(`${API_BASE}/scans`, { signal: AbortSignal.timeout(1500) });
@@ -215,21 +181,13 @@ export async function uploadAndScanZip(
 }
 
 export async function triggerScan(params: {
-  demo_target?: 'cryptotalk' | 'legacy_banking';
   scan_type?: string;
   target_url?: string;
   asset_id?: string;
 }): Promise<{ scan_id: string }> {
-  if (params.demo_target) {
-    const demo = DEMO_CODEBASES[params.demo_target];
-    const result = await executeClientSideScan(demo.files, demo.name);
-    return { scan_id: result.scan.id };
-  }
-
   if (params.target_url) {
     return inspectTlsEndpoint(params.target_url);
   }
-
   throw new Error('Unsupported scan trigger parameters');
 }
 
@@ -294,7 +252,7 @@ ZW50cy5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC5J0k2Y+11
   return { scan_id: result.scan.id };
 }
 
-// ─── Findings ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Findings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function fetchFindings(params?: {
   asset_id?: string;
   scan_id?: string;
@@ -355,7 +313,7 @@ export async function updateFindingStatus(
   throw new Error('Finding not found');
 }
 
-// ─── Crypto-BOM & Inventory ──────────────────────────────────────────────────
+// â”€â”€â”€ Crypto-BOM & Inventory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function fetchCryptoBOM(assetIdOrScanId?: string): Promise<CryptoBOMComponent[]> {
   const local = localStorage.getItem('cryptotool_bom');
   const bom: CryptoBOMComponent[] = local ? JSON.parse(local) : [];
@@ -409,7 +367,7 @@ export async function fetchCycloneDXCBOM(): Promise<CycloneDXCBOM> {
   };
 }
 
-// ─── Risk & PQC Overview ─────────────────────────────────────────────────────
+// â”€â”€â”€ Risk & PQC Overview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function fetchRiskOverview(): Promise<RiskOverview> {
   const findings = await fetchFindings();
   const crit = findings.filter(f => f.severity === 'critical').length;
@@ -513,7 +471,7 @@ export async function fetchPQCOverview(): Promise<PQCReadinessOverview> {
   };
 }
 
-// ─── AI Security Analyst Interface ───────────────────────────────────────────
+// â”€â”€â”€ AI Security Analyst Interface â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function analyzeFindingWithAI(findingId: string, assetId?: string): Promise<any> {
   const finding = await fetchFindingById(findingId);
   return explainFindingWithGemini(finding, finding.asset_name || 'Enterprise Asset');
@@ -524,7 +482,7 @@ export async function askAICopilotSearch(query: string): Promise<any> {
   return askGeminiCopilot(query, findings);
 }
 
-// ─── Baseline Comparison (Scan A vs Scan B) ──────────────────────────────────
+// â”€â”€â”€ Baseline Comparison (Scan A vs Scan B) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function compareScans(scanIdA: string, scanIdB: string) {
   const [scanA, scanB, findingsA, findingsB] = await Promise.all([
     fetchScanById(scanIdA),
@@ -551,7 +509,7 @@ export async function compareScans(scanIdA: string, scanIdB: string) {
   };
 }
 
-// ─── Certificates ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Certificates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function fetchCertificates(): Promise<CertificateEntry[]> {
   return [
     {
@@ -572,13 +530,13 @@ export async function fetchCertificates(): Promise<CertificateEntry[]> {
       sans: ['api.cryptotool.internal', 'vault.cryptotool.internal'],
       chain_status: 'valid',
       health_status: 'healthy',
-      is_demo: true,
+      is_demo: false,
       created_at: new Date().toISOString()
     }
   ];
 }
 
-// ─── Reports ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Reports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function fetchReports(): Promise<AssessmentReport[]> {
   const local = localStorage.getItem('cryptotool_reports');
   return local ? JSON.parse(local) : [];
@@ -601,7 +559,7 @@ export async function createReport(scanId: string, title?: string): Promise<Asse
     organization_id: 'a0000000-0000-0000-0000-000000000001',
     asset_id: scan.asset_id,
     scan_id: scanId,
-    title: title || `Cryptographic Assessment Report — ${scan.asset_name || 'Target Asset'}`,
+    title: title || `Cryptographic Assessment Report â€” ${scan.asset_name || 'Target Asset'}`,
     report_type: 'executive_summary',
     format: 'pdf',
     generated_by: 'Chief Information Security Officer',
@@ -635,7 +593,7 @@ export async function createReport(scanId: string, title?: string): Promise<Asse
   return report;
 }
 
-// ─── Digital Twin Graph ───────────────────────────────────────────────────────
+// â”€â”€â”€ Digital Twin Graph â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function fetchDigitalTwin(): Promise<import('../types').DigitalTwinGraph> {
   return {
     nodes: [
@@ -657,7 +615,7 @@ export async function fetchDigitalTwin(): Promise<import('../types').DigitalTwin
           recommended_pqc: 'NIST CNSA 2.0 Complete Suite',
           hybrid_candidate: 'Hybrid X25519 + ML-KEM-768 / Dual Certs',
           migration_difficulty: 'COMPLEX',
-          estimated_cost_inr: '₹18.4 Lakh',
+          estimated_cost_inr: 'â‚¹18.4 Lakh',
           priority: 'P0',
           affected_services: ['Legacy Banking', 'Citizen Identity', 'Payment Gateway']
         }
@@ -683,14 +641,14 @@ export async function fetchDigitalTwin(): Promise<import('../types').DigitalTwin
           recommended_pqc: 'ML-KEM-768 (FIPS 203)',
           hybrid_candidate: 'X25519 + ML-KEM-768 Hybrid',
           migration_difficulty: 'MEDIUM',
-          estimated_cost_inr: '₹4.2 Lakh',
+          estimated_cost_inr: 'â‚¹4.2 Lakh',
           priority: 'P0',
           affected_files: ['PaymentTokenGateway.java', 'TLSConfig.java']
         }
       },
       {
-        id: 'node-app-cryptotalk',
-        label: 'CryptoTalk Secure Messenger',
+        id: 'node-app-messenger',
+        label: 'Enterprise Secure Messenger',
         type: 'app',
         category: 'Mobile E2EE Messaging',
         status: 'safe',
@@ -709,7 +667,7 @@ export async function fetchDigitalTwin(): Promise<import('../types').DigitalTwin
           recommended_pqc: 'ML-KEM-768 for Ratchet',
           hybrid_candidate: 'Double Ratchet + Kyber Hybrid',
           migration_difficulty: 'LOW',
-          estimated_cost_inr: '₹1.5 Lakh',
+          estimated_cost_inr: 'â‚¹1.5 Lakh',
           priority: 'P3',
           affected_files: ['CryptoManager.kt']
         }
@@ -734,7 +692,7 @@ export async function fetchDigitalTwin(): Promise<import('../types').DigitalTwin
           recommended_pqc: 'ML-KEM-768 & ML-DSA-65',
           hybrid_candidate: 'X25519_ML-KEM-768 / RSA_ML-DSA Dual',
           migration_difficulty: 'MEDIUM',
-          estimated_cost_inr: '₹4.2 Lakh',
+          estimated_cost_inr: 'â‚¹4.2 Lakh',
           priority: 'P0'
         }
       },
@@ -758,7 +716,7 @@ export async function fetchDigitalTwin(): Promise<import('../types').DigitalTwin
           recommended_pqc: 'NIST FIPS 203 (ML-KEM) & FIPS 204 (ML-DSA)',
           hybrid_candidate: 'Immediate Hybrid Key Exchange Deployment',
           migration_difficulty: 'HIGH',
-          estimated_cost_inr: '₹8.4 Lakh',
+          estimated_cost_inr: 'â‚¹8.4 Lakh',
           priority: 'P0'
         }
       },
@@ -783,7 +741,7 @@ export async function fetchDigitalTwin(): Promise<import('../types').DigitalTwin
           recommended_pqc: 'NIST Final Standard FIPS 203',
           hybrid_candidate: 'X25519 + ML-KEM-768',
           migration_difficulty: 'LOW',
-          estimated_cost_inr: '₹2.8 Lakh',
+          estimated_cost_inr: 'â‚¹2.8 Lakh',
           priority: 'P0'
         }
       },
@@ -808,14 +766,14 @@ export async function fetchDigitalTwin(): Promise<import('../types').DigitalTwin
           recommended_pqc: 'NIST Final Standard FIPS 204',
           hybrid_candidate: 'Dual Cert / Composite Signature',
           migration_difficulty: 'MEDIUM',
-          estimated_cost_inr: '₹3.6 Lakh',
+          estimated_cost_inr: 'â‚¹3.6 Lakh',
           priority: 'P1'
         }
       }
     ],
     edges: [
       { id: 'e1', source: 'node-ent', target: 'node-app-payment', label: 'Protects Cards', animated: true, color: '#f43f5e' },
-      { id: 'e3', source: 'node-ent', target: 'node-app-cryptotalk', label: 'E2EE Comms', animated: false, color: '#10b981' },
+      { id: 'e3', source: 'node-ent', target: 'node-app-messenger', label: 'E2EE Comms', animated: false, color: '#10b981' },
       { id: 'e4', source: 'node-app-payment', target: 'node-crypto-rsa', label: 'Uses RSA-2048', animated: true, color: '#f43f5e' },
       { id: 'e7', source: 'node-crypto-rsa', target: 'node-threat-shor', label: 'Shor Factoring (Broken)', animated: true, color: '#f43f5e' },
       { id: 'e9', source: 'node-threat-shor', target: 'node-pqc-mlkem', label: 'Migrate Key Exchange', animated: true, color: '#a855f7' },
@@ -826,7 +784,7 @@ export async function fetchDigitalTwin(): Promise<import('../types').DigitalTwin
       vulnerable_nodes: 3,
       pqc_ready_nodes: 2,
       highest_risk_node: 'Payment Tokenization Gateway (RSA-2048 / HNDL Critical)',
-      overall_posture: 'Elevated Quantum Exposure — Immediate Hybrid KEM Migration Required'
+      overall_posture: 'Elevated Quantum Exposure â€” Immediate Hybrid KEM Migration Required'
     }
   };
 }
@@ -844,7 +802,7 @@ export async function calculateMoscaRisk(params: import('../types').MoscaSimulat
     sum_XY: sum,
     is_vulnerable: isVuln,
     risk_level: isVuln ? (sum > z + 4 ? 'CRITICAL' : 'HIGH') : 'LOW',
-    headline: isVuln ? `⚠️ CRITICAL MOSCA RISK DETECTED (X + Y = ${sum}y > Z = ${z}y)` : `✅ SECURE QUANTUM BUFFER`,
+    headline: isVuln ? `âš ï¸ CRITICAL MOSCA RISK DETECTED (X + Y = ${sum}y > Z = ${z}y)` : `âœ… SECURE QUANTUM BUFFER`,
     explanation: isVuln
       ? `Data lifetime (${params.data_lifetime_X}y) and migration window (${params.migration_time_Y}y) exceed CRQC horizon.`
       : `Planned migration will complete securely prior to the CRQC horizon.`,
@@ -879,7 +837,7 @@ export async function calculateMigrationCost(params: import('../types').Migratio
     hardware_hsm_upgrade_inr: hsmCost,
     testing_audit_cost_inr: testCost,
     total_estimated_cost_inr: total,
-    total_estimated_cost_formatted: `₹${(total / 100000).toFixed(2)} Lakh`,
+    total_estimated_cost_formatted: `â‚¹${(total / 100000).toFixed(2)} Lakh`,
     total_estimated_cost_usd_formatted: `$${(total / 85000).toFixed(1)}K USD`,
     roi_risk_reduction_percentage: 94
   };
@@ -931,7 +889,7 @@ export async function fetchAuditLogs(): Promise<AuditLogEntry[]> {
       action: 'SCAN_EXECUTED',
       resource_type: 'scan',
       resource_id: 'scan-001',
-      details: { target: 'CryptoTalk Secure Messenger', method: 'AST & Pattern Discovery' },
+      details: { target: 'Enterprise Secure Messenger', method: 'AST & Pattern Discovery' },
       ip_address: '127.0.0.1',
       created_at: new Date().toISOString()
     }
@@ -978,12 +936,4 @@ export async function fetchCryptoKeys(): Promise<import('../types').KeyMetadataE
     pqc_candidate: f.quantum_vulnerable ? 'ML-KEM-768' : 'AES-256-GCM',
     data_sensitivity: f.severity === 'critical' ? 'Financial / PCI-DSS' : 'Operational / Internal'
   }));
-}
-
-export async function resetDemoStore(): Promise<void> {
-  localStorage.removeItem('cryptotool_scans');
-  localStorage.removeItem('cryptotool_findings');
-  localStorage.removeItem('cryptotool_bom');
-  localStorage.removeItem('cryptotool_reports');
-  localStorage.removeItem('cryptotool_assets');
 }

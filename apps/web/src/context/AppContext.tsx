@@ -17,8 +17,7 @@ interface AppContextType {
   setOrganization: (org: Organization) => void;
   isDarkMode: boolean;
   toggleDarkMode: () => void;
-  isDemoMode: boolean;
-  setDemoMode: (val: boolean) => void;
+
   notifications: NotificationItem[];
   addNotification: (title: string, message: string, type?: 'info' | 'success' | 'warning' | 'error') => void;
   removeNotification: (id: string) => void;
@@ -36,7 +35,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [user, setUser] = useState<UserMember | null>(null);
   const [organizationsList, setOrganizationsList] = useState<Organization[]>([]);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
-  const [isDemoMode, setDemoMode] = useState<boolean>(true);
+
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState<boolean>(false);
   const [activeScanId, setActiveScanId] = useState<string | null>(null);
@@ -129,8 +128,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setOrganization,
         isDarkMode,
         toggleDarkMode,
-        isDemoMode,
-        setDemoMode,
+
         notifications,
         addNotification,
         removeNotification,

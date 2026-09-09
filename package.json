@@ -1,7 +1,7 @@
 {
   "name": "cryptotool-monorepo",
   "version": "1.0.0",
-  "description": "Enterprise Cryptographic Discovery & Analysis Tool (ECDAT - SIH26164)",
+  "description": "Enterprise Cryptographic Discovery & Assessment Platform (ECDAT)",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -21,8 +21,7 @@
     "security",
     "discovery",
     "crypto-bom",
-    "pqc",
-    "sih26164"
+    "pqc"
   ],
   "author": "Antigravity DevSecOps Team",
   "license": "Apache-2.0"

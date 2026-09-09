@@ -35,7 +35,7 @@ export const LandingPage: React.FC = () => {
     },
     {
       title: 'Post-Quantum (PQC) Readiness',
-      description: 'Evaluate quantum susceptibility against Shor’s algorithm and formulate migration roadmaps referencing NIST FIPS 203/204.',
+      description: 'Evaluate quantum susceptibility against Shorâ€™s algorithm and formulate migration roadmaps referencing NIST FIPS 203/204.',
       icon: Cpu,
       color: 'text-purple-400',
     },
@@ -70,7 +70,7 @@ export const LandingPage: React.FC = () => {
           <div>
             <span className="text-lg font-black tracking-wider text-white font-mono">CRYPTOTOOL</span>
             <span className="text-[10px] uppercase font-mono tracking-widest text-cyan-400 font-semibold block -mt-1">
-              ECDAT • SIH26164
+              ECDAT • ENTERPRISE SUITE
             </span>
           </div>
         </div>
@@ -89,7 +89,7 @@ export const LandingPage: React.FC = () => {
       <section className="relative pt-20 pb-28 px-6 max-w-7xl mx-auto text-center space-y-8">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-xs font-mono">
           <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-          <span>Smart India Hackathon 2026 — Problem Statement SIH26164</span>
+          <span>Post-Quantum Cryptographic Discovery & Assessment Platform</span>
         </div>
 
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-tight">
@@ -112,14 +112,6 @@ export const LandingPage: React.FC = () => {
             rightIcon={<ArrowRight className="w-5 h-5" />}
           >
             Start Free Assessment
-          </Button>
-          <Button
-            variant="secondary"
-            size="lg"
-            onClick={() => navigate('/demo/cryptotalk')}
-            leftIcon={<Play className="w-4 h-4 text-cyan-400" />}
-          >
-            Explore CryptoTalk Demo
           </Button>
         </div>
 
@@ -172,40 +164,6 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Reference App Showcase Banner */}
-      <section className="py-16 px-6 max-w-7xl mx-auto">
-        <div className="p-8 sm:p-12 rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-navy-900 via-navy-950 to-brand-950 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="space-y-4 max-w-xl">
-            <span className="text-xs font-mono uppercase text-cyan-300 font-semibold bg-cyan-500/10 px-2.5 py-1 rounded border border-cyan-500/30">
-              Reference Secure Implementation
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-              Test CryptoTool with CryptoTalk
-            </h2>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              CryptoTalk is our reference encrypted messaging application implementing AES-256-GCM, Android Keystore StrongBox, and X25519/ECDH. Run an automated discovery scan to view verified Crypto-BOM generation and PQC readiness.
-            </p>
-            <Button
-              variant="cyber"
-              onClick={() => navigate('/demo/cryptotalk')}
-              rightIcon={<ArrowRight className="w-4 h-4" />}
-            >
-              Launch CryptoTalk Demo Scan
-            </Button>
-          </div>
-
-          <div className="p-5 rounded-2xl border border-slate-800 bg-navy-950/80 font-mono text-xs text-slate-300 space-y-2 w-full md:w-80 shadow-2xl">
-            <div className="flex items-center justify-between text-[11px] text-slate-500 border-b border-slate-800 pb-2">
-              <span>CryptoTalk Security Card</span>
-              <span className="text-emerald-400 font-bold">Score: 100/100</span>
-            </div>
-            <div className="flex justify-between"><span>AES-256-GCM:</span> <span className="text-emerald-400">Authenticated AEAD</span></div>
-            <div className="flex justify-between"><span>Key Agreement:</span> <span className="text-cyan-400">X25519 / ECDH</span></div>
-            <div className="flex justify-between"><span>Master Key:</span> <span className="text-emerald-400">Android Keystore</span></div>
-            <div className="flex justify-between"><span>PQC Status:</span> <span className="text-amber-400">Hybrid Required</span></div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

@@ -113,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
                 CRYPTOTOOL
               </span>
               <span className="text-[10px] uppercase font-mono tracking-widest text-cyan-400 font-semibold block -mt-1">
-                ECDAT • SIH26164
+                ECDAT • ENTERPRISE CORE
               </span>
             </div>
           </NavLink>

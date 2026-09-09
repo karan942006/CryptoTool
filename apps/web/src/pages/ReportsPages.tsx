@@ -156,7 +156,7 @@ export const ReportDetailsPage: React.FC = () => {
               <span className="text-xl font-black font-mono tracking-wider text-white print:text-black">CRYPTOTOOL</span>
             </div>
             <span className="text-xs font-mono uppercase text-slate-400 border border-slate-700 px-3 py-1 rounded-full">
-              CONFIDENTIAL • SIH26164
+              CONFIDENTIAL • ENTERPRISE AUDIT
             </span>
           </div>
 

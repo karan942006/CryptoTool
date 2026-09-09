@@ -112,18 +112,6 @@ export const MainDashboard: React.FC = () => {
     loadDashboardData();
   }, []);
 
-  const handleDemoScan = async (target: 'cryptotalk' | 'legacy_banking') => {
-    // Navigate immediately for instant feedback
-    const immediateId = `demo-${target}-${Date.now()}`;
-    navigate(`/scans/progress/${immediateId}`);
-    addNotification(
-      'Scan Triggered',
-      `Started discovery pipeline for ${target === 'cryptotalk' ? 'CryptoTalk Reference App' : 'Legacy Banking API'}`,
-      'success'
-    );
-    // Run real scan in background
-    api.triggerScan({ demo_target: target }).catch(() => {});
-  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -135,7 +123,7 @@ export const MainDashboard: React.FC = () => {
               Enterprise Cryptographic Control Center
             </h1>
             <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-              ECDAT • SIH26164
+              ECDAT
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
@@ -163,13 +151,13 @@ export const MainDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* 🌟 WOW FACTOR CALLOUT: Cryptographic Risk Digital Twin Banner */}
+      {/* ðŸŒŸ WOW FACTOR CALLOUT: Cryptographic Risk Digital Twin Banner */}
       <Card glow="cyan" className="p-6 border-cyan-500/40 bg-gradient-to-r from-navy-950 via-navy-900 to-purple-950/30 shadow-2xl">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-cyan-300 bg-cyan-500/20 px-2 py-0.5 rounded border border-cyan-500/30">
-                ⭐ Featured Innovation
+                â­ Featured Innovation
               </span>
               <span className="text-[10px] font-mono text-purple-300">Decision-Support Architecture</span>
             </div>
@@ -177,7 +165,7 @@ export const MainDashboard: React.FC = () => {
               Cryptographic Risk Digital Twin
             </h2>
             <p className="text-xs text-slate-300 font-sans leading-relaxed">
-              Explore the live topological graph connecting <strong>Enterprise Assets</strong> → <strong>Cryptographic Primitives</strong> → <strong>Quantum Threat Horizon</strong> → <strong>NIST FIPS 203/204 Migration Paths</strong> with instant context inspection.
+              Explore the live topological graph connecting <strong>Enterprise Assets</strong> â†’ <strong>Cryptographic Primitives</strong> â†’ <strong>Quantum Threat Horizon</strong> â†’ <strong>NIST FIPS 203/204 Migration Paths</strong> with instant context inspection.
             </p>
           </div>
 
@@ -224,7 +212,7 @@ export const MainDashboard: React.FC = () => {
 
         <KPICard
           title="Est. PQC Budget"
-          value="₹14.2 L"
+          value="â‚¹14.2 L"
           subtitle="Covers 8 apps & 24 certs"
           icon={Cpu}
           glow="cyan"

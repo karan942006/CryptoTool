@@ -10,7 +10,6 @@ import {
   Bot,
   ShieldAlert,
   Play,
-  RotateCcw,
   CheckCircle2,
   ExternalLink,
   ChevronRight
@@ -39,25 +38,11 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobileSidebar }) => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isResettingDemo, setIsResettingDemo] = useState(false);
 
   // Derive breadcrumbs from path
   const pathParts = location.pathname.split('/').filter(Boolean);
   const currentTitle = pathParts[0] ? pathParts[0].replace('-', ' ').toUpperCase() : 'DASHBOARD';
 
-  const handleResetDemo = async () => {
-    setIsResettingDemo(true);
-    try {
-      await api.resetDemoStore();
-      await refreshAppData();
-      addNotification('Demo Reset', 'Datastore restored to original SIH demonstration state', 'success');
-      navigate('/dashboard');
-    } catch (e) {
-      addNotification('Reset Failed', 'Could not reset datastore', 'error');
-    } finally {
-      setIsResettingDemo(false);
-    }
-  };
 
   const searchablePages = [
     { title: 'Main Dashboard', path: '/dashboard', cat: 'Assessment' },
@@ -71,7 +56,6 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobileSidebar }) => {
     { title: 'AI Security Analyst', path: '/ai-analyst', cat: 'Intelligence' },
     { title: 'Assessment Reports (PDF)', path: '/reports', cat: 'Compliance' },
     { title: 'Audit Trail', path: '/audit-logs', cat: 'Security' },
-    { title: 'CryptoTalk Reference App Showcase', path: '/demo/cryptotalk', cat: 'Demo' },
   ];
 
   const filteredSearch = searchQuery.trim()
@@ -125,16 +109,6 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenMobileSidebar }) => {
             <span>AI Analyst</span>
           </button>
 
-          {/* Reset Demo Button */}
-          <button
-            onClick={handleResetDemo}
-            disabled={isResettingDemo}
-            title="Reset datastore to default demonstration state"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700 transition-colors disabled:opacity-50"
-          >
-            <RotateCcw className={`w-3.5 h-3.5 ${isResettingDemo ? 'animate-spin' : ''}`} />
-            <span className="hidden xl:inline">Reset Demo</span>
-          </button>
 
           {/* Notification Bell */}
           <div className="relative">

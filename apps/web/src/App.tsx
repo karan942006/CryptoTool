@@ -18,7 +18,7 @@ import { AISecurityAnalystPage } from './pages/AISecurityAnalystPage';
 import { PQCReadinessPage } from './pages/PQCReadinessPage';
 import { CertificatesPage } from './pages/CertificatesPage';
 import { ReportsPage, ReportDetailsPage } from './pages/ReportsPages';
-import { TeamUsersPage, SettingsPage, AuditLogsPage, CryptoTalkDemoPage } from './pages/AdminPages';
+import { TeamUsersPage, SettingsPage, AuditLogsPage } from './pages/AdminPages';
 
 export const App: React.FC = () => {
   return (
@@ -58,7 +58,7 @@ export const App: React.FC = () => {
             <Route path="/team" element={<TeamUsersPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/audit-logs" element={<AuditLogsPage />} />
-            <Route path="/demo/cryptotalk" element={<CryptoTalkDemoPage />} />
+
           </Route>
 
           {/* Fallback */}

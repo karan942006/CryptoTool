@@ -71,7 +71,7 @@ export const Login: React.FC = () => {
               </div>
             </div>
 
-            {/* Quick RBAC Role Selection for Demo */}
+            {/* RBAC Role Selection */}
             <div>
               <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 font-mono">
                 Active RBAC Role

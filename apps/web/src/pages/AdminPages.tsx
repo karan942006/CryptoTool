@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users,
@@ -79,7 +79,7 @@ export const TeamUsersPage: React.FC = () => {
         <Card className="p-5 border-cyan-500/40 bg-navy-950 space-y-4 font-mono text-xs shadow-2xl animate-in fade-in">
           <div className="flex items-center justify-between border-b border-slate-800 pb-2">
             <span className="font-bold text-cyan-300">Invite New Enterprise Team Member</span>
-            <button onClick={() => setShowInviteModal(false)} className="text-slate-400 hover:text-white">✕</button>
+            <button onClick={() => setShowInviteModal(false)} className="text-slate-400 hover:text-white">âœ•</button>
           </div>
           <form onSubmit={handleAddMember} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -304,82 +304,6 @@ export const AuditLogsPage: React.FC = () => {
           </table>
         </div>
       </Card>
-    </div>
-  );
-};
-
-export const CryptoTalkDemoPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { addNotification } = useApp();
-  const [isScanning, setIsScanning] = useState(false);
-
-  const handleRunDemo = async () => {
-    setIsScanning(true);
-    try {
-      const res = await api.triggerScan({ demo_target: 'cryptotalk' });
-      addNotification('CryptoTalk Analysis Initiated', 'Running multi-layer discovery pipeline', 'success');
-      navigate(`/scans/progress/${res.scan_id}`);
-    } catch (e: any) {
-      addNotification('Error', e.message, 'error');
-      setIsScanning(false);
-    }
-  };
-
-  return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-300">
-      <div className="text-center space-y-3 pb-4 border-b border-slate-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-mono text-cyan-300">
-          <Shield className="w-3.5 h-3.5 text-cyan-400" />
-          <span>SIH26164 Demonstration Reference Application</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">CryptoTalk Secure Messenger</h1>
-        <p className="text-sm text-slate-400 max-w-2xl mx-auto">
-          CryptoTalk is our reference secure mobile messaging application engineered with modern cryptographic standards. Test CryptoTool's discovery and analysis engine on its verified implementation.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="space-y-4">
-          <CardHeader title="Reference Cryptographic Implementation" subtitle="Key primitives built into CryptoTalk" />
-          <div className="space-y-3 text-xs font-mono">
-            <div className="p-3 rounded-xl bg-navy-950 border border-slate-800 flex justify-between items-center">
-              <span>Message Encryption:</span>
-              <span className="font-bold text-emerald-400">AES-256-GCM (AEAD)</span>
-            </div>
-            <div className="p-3 rounded-xl bg-navy-950 border border-slate-800 flex justify-between items-center">
-              <span>Key Agreement:</span>
-              <span className="font-bold text-cyan-400">X25519 / ECDH</span>
-            </div>
-            <div className="p-3 rounded-xl bg-navy-950 border border-slate-800 flex justify-between items-center">
-              <span>Master Key Storage:</span>
-              <span className="font-bold text-emerald-400">Android Keystore (StrongBox)</span>
-            </div>
-            <div className="p-3 rounded-xl bg-navy-950 border border-slate-800 flex justify-between items-center">
-              <span>Digest / Hashes:</span>
-              <span className="font-bold text-emerald-400">SHA-256 (FIPS 180-4)</span>
-            </div>
-          </div>
-        </Card>
-
-        <Card glow="cyan" className="space-y-6 flex flex-col justify-between p-6">
-          <div className="space-y-3">
-            <h3 className="text-lg font-bold text-white">Execute Discovery on CryptoTalk</h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              CryptoTool will parse the Java/Kotlin source code, extract AST evidence, build the central Crypto-BOM, evaluate Post-Quantum (PQC) readiness, and formulate an executive security assessment.
-            </p>
-          </div>
-
-          <Button
-            variant="cyber"
-            size="lg"
-            onClick={handleRunDemo}
-            isLoading={isScanning}
-            rightIcon={<Play className="w-4 h-4" />}
-          >
-            Start CryptoTalk Analysis
-          </Button>
-        </Card>
-      </div>
     </div>
   );
 };

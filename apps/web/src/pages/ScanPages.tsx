@@ -35,7 +35,7 @@ import { Badge, SeverityBadge } from '../components/ui/Badge';
 import { ScoreGauge } from '../components/ui/ScoreGauge';
 import { Scan, CryptoFinding, CryptoBOMComponent } from '../types';
 import * as api from '../services/api';
-import { ScannedFileInfo, extractFilesFromZip, executeClientSideScan, DEMO_CODEBASES } from '../services/clientScanner';
+import { ScannedFileInfo, extractFilesFromZip, executeClientSideScan } from '../services/clientScanner';
 import { useApp } from '../context/AppContext';
 
 export const StartScanPage: React.FC = () => {
@@ -112,17 +112,7 @@ export const StartScanPage: React.FC = () => {
     }
   };
 
-  const handleLaunchDemo = async (target: 'cryptotalk' | 'legacy_banking') => {
-    setIsStarting(true);
-    const demo = DEMO_CODEBASES[target];
-    const res = await executeClientSideScan(demo.files, demo.name);
-    addNotification(
-      'Demo Scan Executed',
-      `Discovery engine analyzed ${demo.name} (${demo.files.length} files)`,
-      'success'
-    );
-    navigate(`/scans/results/${res.scan.id}`);
-  };
+
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
@@ -229,7 +219,7 @@ export const StartScanPage: React.FC = () => {
                   <p className="text-[11px] text-slate-500 font-sans">
                     {selectedFile
                       ? `${(selectedFile.size / 1024).toFixed(1)} KB selected`
-                      : 'Zero fake findings • Deterministic AST & entropy discovery engine'}
+                      : 'Zero fake findings â€¢ Deterministic AST & entropy discovery engine'}
                   </p>
                 </div>
                 <input
@@ -272,51 +262,6 @@ export const StartScanPage: React.FC = () => {
           </Button>
         </Card>
       </form>
-
-      {/* 1-Click Reference Benchmarks */}
-      <Card className="p-5 border-slate-800 bg-navy-950/80 space-y-4 shadow-xl">
-        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-          <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-            1-Click Benchmark Reference Codebases (SIH 26164)
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 flex flex-col justify-between space-y-3">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-cyan-300 font-mono">CryptoTalk Secure Messenger</span>
-                <span className="text-[9px] font-mono font-bold bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded">
-                  PQC Ready
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400 mt-1 font-sans">
-                E2EE Android app with AES-256-GCM, Android Keystore StrongBox, RSA-3072, and SHA-256.
-              </p>
-            </div>
-            <Button size="sm" variant="outline" onClick={() => handleLaunchDemo('cryptotalk')} className="w-full text-xs">
-              Scan CryptoTalk Reference
-            </Button>
-          </div>
-
-          <div className="p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 flex flex-col justify-between space-y-3">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-rose-300 font-mono">Legacy Core Banking API</span>
-                <span className="text-[9px] font-mono font-bold bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded">
-                  Critical Scope
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400 mt-1 font-sans">
-                Vulnerable banking system containing hardcoded AES keys, AES-ECB, 3DES, RSA-1024, MD5, and SHA-1.
-              </p>
-            </div>
-            <Button size="sm" variant="outline" onClick={() => handleLaunchDemo('legacy_banking')} className="w-full text-xs">
-              Scan Legacy Banking Sample
-            </Button>
-          </div>
-        </div>
-      </Card>
     </div>
   );
 };
@@ -505,10 +450,10 @@ export const ScanResultsPage: React.FC = () => {
                   <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-slate-500">
                     <div className="flex items-center gap-4">
                       <span>Algorithm: <strong className="text-cyan-300">{f.algorithm}</strong></span>
-                      <span>Quantum: <strong className={f.quantum_vulnerable ? 'text-rose-400' : 'text-emerald-400'}>{f.quantum_vulnerable ? '🔴 Shor Vulnerable' : '🟢 Quantum Safe'}</strong></span>
+                      <span>Quantum: <strong className={f.quantum_vulnerable ? 'text-rose-400' : 'text-emerald-400'}>{f.quantum_vulnerable ? 'ðŸ”´ Shor Vulnerable' : 'ðŸŸ¢ Quantum Safe'}</strong></span>
                     </div>
                     <Button size="sm" variant="ghost" onClick={() => navigate(`/findings/${f.id}`)} className="text-xs text-cyan-300 hover:text-white p-0 h-auto">
-                      Inspect Remediation & AI Analysis →
+                      Inspect Remediation & AI Analysis â†’
                     </Button>
                   </div>
                 </div>
@@ -614,7 +559,7 @@ export const ScanProgressPage: React.FC = () => {
     <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in duration-300">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-black text-white font-mono">
-          🔍 Discovering Cryptographic Primitives...
+          ðŸ” Discovering Cryptographic Primitives...
         </h2>
         <p className="text-xs text-slate-400 font-mono">Running deterministic AST parser across codebase</p>
       </div>
@@ -634,7 +579,7 @@ export const ScanProgressPage: React.FC = () => {
         </div>
 
         <div className="p-4 rounded-xl bg-black/60 border border-slate-800 space-y-1.5 font-mono text-xs max-h-52 overflow-y-auto">
-          <span className="text-[10px] uppercase text-slate-400 font-bold block mb-2">▶ Execution Logs:</span>
+          <span className="text-[10px] uppercase text-slate-400 font-bold block mb-2">â–¶ Execution Logs:</span>
           {logs.map((log, idx) => (
             <div key={idx} className="flex items-start gap-2 text-[11px] leading-relaxed">
               <span className="text-slate-600 shrink-0">[{log.timestamp}]</span>

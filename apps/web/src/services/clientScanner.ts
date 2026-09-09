@@ -1,4 +1,4 @@
-import JSZip from 'jszip';
+﻿import JSZip from 'jszip';
 import { createClient } from '@supabase/supabase-js';
 import {
   CryptoFinding,
@@ -48,7 +48,7 @@ export interface ClientDiscoveryRule {
   cwe?: string;
 }
 
-// ─── Universal Multi-Language Cryptographic Discovery Ruleset ─────────────────
+// â”€â”€â”€ Universal Multi-Language Cryptographic Discovery Ruleset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const CLIENT_DISCOVERY_RULES: ClientDiscoveryRule[] = [
   // Hashing: Broken MD5
   {
@@ -422,7 +422,7 @@ export const CLIENT_DISCOVERY_RULES: ClientDiscoveryRule[] = [
   }
 ];
 
-// ─── Shannon Entropy Calculator for High-Entropy Secret Detection ─────────────
+// â”€â”€â”€ Shannon Entropy Calculator for High-Entropy Secret Detection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function calculateShannonEntropy(str: string): number {
   if (!str) return 0;
   const len = str.length;
@@ -439,150 +439,11 @@ export function calculateShannonEntropy(str: string): number {
   return entropy;
 }
 
-// ─── Reference Test Codebases for Demo Scenarios ──────────────────────────────
-export const DEMO_CODEBASES = {
-  cryptotalk: {
-    name: 'CryptoTalk Secure Messenger (Reference App)',
-    type: 'mobile_app' as const,
-    files: [
-      {
-        path: 'app/src/main/java/com/cryptotalk/security/CryptoManager.kt',
-        content: `package com.cryptotalk.security
-
-import javax.crypto.Cipher
-import javax.crypto.SecretKey
-import javax.crypto.spec.GCMParameterSpec
-import java.security.KeyStore
-import java.security.SecureRandom
-import java.security.KeyPairGenerator
-import java.security.MessageDigest
-
-class CryptoManager {
-    private val keyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
-    private val secureRandom = SecureRandom()
-
-    // Strong authenticated AES-256-GCM
-    fun encryptMessage(plaintext: ByteArray, secretKey: SecretKey): ByteArray {
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        val iv = ByteArray(12)
-        secureRandom.nextBytes(iv)
-        val spec = GCMParameterSpec(128, iv)
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, spec)
-        return iv + cipher.doFinal(plaintext)
-    }
-
-    // Modern 3072-bit RSA Key Pair
-    fun generateUserKeyPair() {
-        val kpg = KeyPairGenerator.getInstance("RSA")
-        kpg.initialize(3072)
-        kpg.generateKeyPair()
-    }
-
-    // SHA-256 Digest
-    fun computeDigest(data: ByteArray): ByteArray {
-        val md = MessageDigest.getInstance("SHA-256")
-        return md.digest(data)
-    }
-}`
-      },
-      {
-        path: 'app/src/main/AndroidManifest.xml',
-        content: `<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.cryptotalk.app">
-    <application
-        android:allowBackup="false"
-        android:debuggable="false"
-        android:usesCleartextTraffic="false"
-        android:networkSecurityConfig="@xml/network_security_config">
-        <activity android:name=".MainActivity" android:exported="true" />
-    </application>
-</manifest>`
-      }
-    ]
-  },
-  legacy_banking: {
-    name: 'Legacy Core Banking API (Vulnerable Sample)',
-    type: 'api' as const,
-    files: [
-      {
-        path: 'src/main/java/com/bank/legacy/LegacyTxService.java',
-        content: `package com.bank.legacy;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
-import java.util.Random;
-
-public class LegacyTxService {
-    // CRITICAL: Hardcoded AES Secret Key
-    private static final String MASTER_KEY = "MasterBankKeySecret12345678";
-
-    public byte[] encryptPin(byte[] pin) throws Exception {
-        // CRITICAL: Insecure AES-ECB mode
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        SecretKeySpec key = new SecretKeySpec(MASTER_KEY.getBytes(), "AES");
-        cipher.init(Cipher.ENCRYPT_MODE, key);
-        return cipher.doFinal(pin);
-    }
-
-    public byte[] legacyDesEncrypt(byte[] data) throws Exception {
-        // CRITICAL: Deprecated 3DES
-        Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5Padding");
-        return cipher.doFinal(data);
-    }
-
-    public void initLegacyKeys() throws Exception {
-        // CRITICAL: Broken 1024-bit RSA
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-        kpg.initialize(1024);
-    }
-
-    public byte[] hashAccount(byte[] acc) throws Exception {
-        // CRITICAL: Broken MD5 hash
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        return md.digest(acc);
-    }
-
-    public byte[] hashSession(byte[] token) throws Exception {
-        // HIGH: Deprecated SHA-1 hash
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
-        return md.digest(token);
-    }
-
-    public int generateOtp() {
-        // HIGH: Predictable PRNG
-        Random rand = new Random();
-        return rand.nextInt(999999);
-    }
-}`
-      },
-      {
-        path: 'scripts/auth_helper.py',
-        content: `import hashlib
-from Crypto.Cipher import DES3
-
-# Hardcoded API Secret
-JWT_SECRET_KEY = "SuperSecretJwtTokenSignatureKey_12345"
-
-def hash_user_password(password):
-    # Insecure MD5 for password
-    return hashlib.md5(password.encode()).hexdigest()
-
-def legacy_token_check(token):
-    # Deprecated SHA1
-    return hashlib.sha1(token.encode()).hexdigest()
-`
-      }
-    ]
-  }
-};
-
 export interface ScanProgressCallback {
   (progress: number, step: string, logs: Array<{ timestamp: string; message: string; level: 'info' | 'warn' | 'error' }>, currentFile?: string): void;
 }
 
-// ─── Main Client-Side Scanner Execution ───────────────────────────────────────
+// â”€â”€â”€ Main Client-Side Scanner Execution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function executeClientSideScan(
   files: Array<{ path: string; content: string; size?: number }>,
   targetName: string,
@@ -801,7 +662,7 @@ export async function executeClientSideScan(
       }
     }
 
-    // ── Shannon Entropy Secret Analysis Pass ─────────────────────────────────
+    // â”€â”€ Shannon Entropy Secret Analysis Pass â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (['js', 'ts', 'jsx', 'tsx', 'py', 'java', 'kt', 'go', 'rs', 'c', 'cpp', 'cs', 'env', 'json', 'yaml', 'properties'].includes(ext)) {
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
@@ -1063,7 +924,7 @@ export async function executeClientSideScan(
   return { scan, findings, bom: bomComponents, risk, pqc, scannedFiles: scannedFilesList, agility, cyclonedx };
 }
 
-// ─── Recursive ZIP / APK / JAR Extractor ──────────────────────────────────────
+// â”€â”€â”€ Recursive ZIP / APK / JAR Extractor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function extractFilesFromZip(file: File): Promise<Array<{ path: string; content: string; size?: number }>> {
   const zip = new JSZip();
   const unzipped = await zip.loadAsync(file);
@@ -1094,7 +955,7 @@ export async function extractFilesFromZip(file: File): Promise<Array<{ path: str
   return files;
 }
 
-// ─── LocalStorage Persistence ────────────────────────────────────────────────
+// â”€â”€â”€ LocalStorage Persistence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function saveScanToLocalStorage(
   scan: Scan,
   findings: CryptoFinding[],
