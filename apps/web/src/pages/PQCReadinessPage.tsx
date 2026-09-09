@@ -19,19 +19,13 @@ import {
 import { Card, CardHeader } from '../components/ui/Card';
 import { ScoreGauge } from '../components/ui/ScoreGauge';
 import { Button } from '../components/ui/Button';
-import { PQCReadinessOverview, PQCBenchmarkItem, MigrationCostResult, CryptoAgilityScore } from '../types';
+import { PQCReadinessOverview, PQCBenchmarkItem, CryptoAgilityScore } from '../types';
 import * as api from '../services/api';
 
 export const PQCReadinessPage: React.FC = () => {
   const [pqc, setPqc] = useState<PQCReadinessOverview | null>(null);
   const [benchmarks, setBenchmarks] = useState<PQCBenchmarkItem[]>([]);
-  const [activeTab, setActiveTab] = useState<'benchmarks' | 'performance' | 'cost_estimator' | 'roadmap'>('benchmarks');
-
-  // Cost Estimator Inputs
-  const [numApps, setNumApps] = useState<number>(8);
-  const [numCerts, setNumCerts] = useState<number>(24);
-  const [numHsms, setNumHsms] = useState<number>(3);
-  const [costResult, setCostResult] = useState<MigrationCostResult | null>(null);
+  const [activeTab, setActiveTab] = useState<'benchmarks' | 'performance' | 'roadmap'>('benchmarks');
 
   // Crypto Agility
   const [agility, setAgility] = useState<CryptoAgilityScore | null>(null);
@@ -53,20 +47,6 @@ export const PQCReadinessPage: React.FC = () => {
     };
     loadData();
   }, []);
-
-  useEffect(() => {
-    const calcCost = async () => {
-      const res = await api.calculateMigrationCost({
-        num_applications: numApps,
-        num_certificates: numCerts,
-        num_hardware_hsms: numHsms,
-        developer_hourly_rate_inr: 2500,
-        estimated_developer_days_per_app: 15
-      });
-      setCostResult(res);
-    };
-    calcCost();
-  }, [numApps, numCerts, numHsms]);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -93,7 +73,7 @@ export const PQCReadinessPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="flex flex-col items-center justify-center p-6 text-center">
           <ScoreGauge
-            score={pqc?.readiness_score || 72}
+            score={pqc?.readiness_score ?? 100}
             label="PQC Readiness Score"
             sublabel="Quantum-safe vs Asymmetric vulnerable component balance"
             type="pqc"
@@ -105,17 +85,17 @@ export const PQCReadinessPage: React.FC = () => {
             Crypto Agility Index
           </span>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-black text-cyan-300 font-mono">{agility?.overall_score || 58}/100</span>
-            <span className="text-xs text-amber-400 font-mono font-bold">({agility?.rating || 'Moderate Agility'})</span>
+            <span className="text-3xl font-black text-cyan-300 font-mono">{agility?.overall_score ?? 100}/100</span>
+            <span className="text-xs text-emerald-400 font-mono font-bold">({agility?.rating || 'High Agility'})</span>
           </div>
           <div className="space-y-1.5 text-[11px] font-mono text-slate-400">
             <div className="flex justify-between">
               <span>Abstraction Layer:</span>
-              <span className="text-white font-bold">{agility?.breakdown.abstraction_layer_score || 45}%</span>
+              <span className="text-white font-bold">{agility?.breakdown.abstraction_layer_score ?? 100}%</span>
             </div>
             <div className="flex justify-between">
               <span>Dynamic Negotiation:</span>
-              <span className="text-white font-bold">{agility?.breakdown.dynamic_cipher_negotiation || 70}%</span>
+              <span className="text-white font-bold">{agility?.breakdown.dynamic_cipher_negotiation ?? 100}%</span>
             </div>
           </div>
         </Card>
@@ -132,13 +112,13 @@ export const PQCReadinessPage: React.FC = () => {
 
         <Card className="p-5 space-y-3 bg-navy-950/80 border-slate-800">
           <span className="text-[10px] font-mono uppercase text-slate-400 font-bold tracking-wider">
-            Estimated Migration Budget
+            Quantum Sensitive Items
           </span>
-          <p className="text-3xl font-black text-emerald-400 font-mono">
-            {costResult?.total_estimated_cost_formatted || '₹14.2 Lakh'}
+          <p className={`text-3xl font-black font-mono ${(pqc?.quantum_sensitive_count ?? 0) > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+            {pqc?.quantum_sensitive_count ?? 0}
           </p>
           <p className="text-[11px] text-slate-400 font-sans">
-            Covers {numApps} applications, {numCerts} certificates, and {numHsms} HSM clusters.
+            {(pqc?.quantum_sensitive_count ?? 0) > 0 ? 'Asymmetric primitives requiring PQC replacement' : 'All monitored primitives are quantum resistant'}
           </p>
         </Card>
       </div>
@@ -148,7 +128,6 @@ export const PQCReadinessPage: React.FC = () => {
         {[
           { id: 'benchmarks', label: '🧪 PQC Benchmarking Lab', icon: Zap },
           { id: 'performance', label: '⚡ Performance Impact Simulator', icon: BarChart3 },
-          { id: 'cost_estimator', label: '💰 Migration Cost Estimator', icon: DollarSign },
           { id: 'roadmap', label: '🗺️ 6-Phase Migration Roadmap', icon: BookOpen }
         ].map(tab => {
           const Icon = tab.icon;
@@ -321,89 +300,6 @@ export const PQCReadinessPage: React.FC = () => {
         </Card>
       )}
 
-      {/* TAB 3: Migration Cost Estimator */}
-      {activeTab === 'cost_estimator' && (
-        <Card className="p-6 space-y-6 border-slate-800 shadow-2xl">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <div>
-              <h3 className="text-lg font-black text-white font-mono flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-emerald-400" />
-                Enterprise PQC Migration Financial & Resource Cost Estimator
-              </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Calculate developer hours, PKI certificate reissuance, HSM hardware upgrades, and compliance testing.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
-            <div className="p-4 rounded-xl bg-navy-950 border border-slate-800 space-y-2">
-              <span className="text-slate-400 block">Number of Monitored Applications</span>
-              <input
-                type="number"
-                min={1}
-                max={50}
-                value={numApps}
-                onChange={e => setNumApps(Number(e.target.value))}
-                className="w-full p-2 rounded-lg bg-navy-900 border border-slate-700 text-white font-bold"
-              />
-            </div>
-
-            <div className="p-4 rounded-xl bg-navy-950 border border-slate-800 space-y-2">
-              <span className="text-slate-400 block">Number of X.509 Certificates to Reissue</span>
-              <input
-                type="number"
-                min={1}
-                max={200}
-                value={numCerts}
-                onChange={e => setNumCerts(Number(e.target.value))}
-                className="w-full p-2 rounded-lg bg-navy-900 border border-slate-700 text-white font-bold"
-              />
-            </div>
-
-            <div className="p-4 rounded-xl bg-navy-950 border border-slate-800 space-y-2">
-              <span className="text-slate-400 block">FIPS Hardware Security Modules (HSM)</span>
-              <input
-                type="number"
-                min={0}
-                max={20}
-                value={numHsms}
-                onChange={e => setNumHsms(Number(e.target.value))}
-                className="w-full p-2 rounded-lg bg-navy-900 border border-slate-700 text-white font-bold"
-              />
-            </div>
-          </div>
-
-          {/* Breakdown Results */}
-          {costResult && (
-            <div className="p-5 rounded-2xl bg-navy-950 border border-slate-800 space-y-4 font-mono text-xs">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                <span className="text-slate-300 font-bold uppercase">Estimated Budget Breakdown</span>
-                <span className="text-lg font-black text-emerald-400">{costResult.total_estimated_cost_formatted}</span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex justify-between py-1 border-b border-slate-800/60">
-                  <span className="text-slate-400">Engineering & Refactoring Effort:</span>
-                  <span className="font-bold text-white">₹{(costResult.developer_effort_cost_inr / 100000).toFixed(2)} Lakh</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-800/60">
-                  <span className="text-slate-400">Certificate Reissuance (Dual Certs):</span>
-                  <span className="font-bold text-white">₹{(costResult.certificate_replacement_inr / 100000).toFixed(2)} Lakh</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-800/60">
-                  <span className="text-slate-400">HSM Hardware & Cloud KMS Upgrades:</span>
-                  <span className="font-bold text-white">₹{(costResult.hardware_hsm_upgrade_inr / 100000).toFixed(2)} Lakh</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-800/60">
-                  <span className="text-slate-400">Security Audit & FIPS Validation:</span>
-                  <span className="font-bold text-white">₹{(costResult.testing_audit_cost_inr / 100000).toFixed(2)} Lakh</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </Card>
-      )}
 
       {/* TAB 4: 6-Phase Migration Roadmap */}
       {activeTab === 'roadmap' && (

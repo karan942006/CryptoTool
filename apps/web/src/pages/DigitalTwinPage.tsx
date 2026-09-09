@@ -25,7 +25,7 @@ import {
 import { Card } from '../components/ui/Card';
 import { SeverityBadge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
-import { DigitalTwinNode, DigitalTwinGraph } from '../types';
+import { DigitalTwinNode, DigitalTwinGraph, CryptoAgilityScore } from '../types';
 import * as api from '../services/api';
 
 type HorizonStage = 'present' | 'transition' | 'qday';
@@ -39,6 +39,7 @@ interface PQCRecipe {
 
 export const DigitalTwinPage: React.FC = () => {
   const [graph, setGraph] = useState<DigitalTwinGraph | null>(null);
+  const [agility, setAgility] = useState<CryptoAgilityScore | null>(null);
   const [selectedNode, setSelectedNode] = useState<DigitalTwinNode | null>(null);
   const [filterTier, setFilterTier] = useState<'all' | 'enterprise' | 'app' | 'crypto' | 'pqc'>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,8 +49,12 @@ export const DigitalTwinPage: React.FC = () => {
 
   useEffect(() => {
     const loadGraph = async () => {
-      const data = await api.fetchDigitalTwin();
+      const [data, ag] = await Promise.all([
+        api.fetchDigitalTwin(),
+        api.fetchCryptoAgility()
+      ]);
       setGraph(data);
+      setAgility(ag);
       if (data.nodes && data.nodes.length > 0) {
         const highRisk = data.nodes.find(n => n.id === 'node-app-payment') || data.nodes[0];
         setSelectedNode(highRisk);
@@ -376,8 +381,8 @@ console.log("FIPS 203 Shared Secret Validated:", aliceSecret.length === 32);`
         <Card className="p-4 bg-navy-900/70 border-slate-800/80">
           <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Crypto Agility Index</span>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="text-2xl font-black font-mono text-cyan-400">78%</span>
-            <span className="text-[11px] text-cyan-500/70 font-mono">High Agility</span>
+            <span className="text-2xl font-black font-mono text-cyan-400">{agility?.overall_score ?? 100}%</span>
+            <span className="text-[11px] text-cyan-500/70 font-mono">{agility?.rating ?? 'High Agility'}</span>
           </div>
         </Card>
 

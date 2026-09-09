@@ -245,7 +245,7 @@ export interface DigitalTwinNode {
     recommended_pqc: string;
     hybrid_candidate: string;
     migration_difficulty: 'LOW' | 'MEDIUM' | 'HIGH' | 'COMPLEX';
-    estimated_cost_inr: string;
+    estimated_cost_inr?: string;
     priority: 'P0' | 'P1' | 'P2' | 'P3';
     affected_files?: string[];
     affected_services?: string[];

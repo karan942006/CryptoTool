@@ -367,14 +367,22 @@ export async function fetchCycloneDXCBOM(): Promise<CycloneDXCBOM> {
   };
 }
 
-// â”€â”€â”€ Risk & PQC Overview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Risk & PQC Overview ──────────────────────────────────────────────────
 export async function fetchRiskOverview(): Promise<RiskOverview> {
-  const findings = await fetchFindings();
+  const [findings, scans, assets] = await Promise.all([
+    fetchFindings(),
+    fetchScans(),
+    fetchAssets()
+  ]);
+
   const crit = findings.filter(f => f.severity === 'critical').length;
   const high = findings.filter(f => f.severity === 'high').length;
   const med = findings.filter(f => f.severity === 'medium').length;
   const low = findings.filter(f => f.severity === 'low').length;
   const info = findings.filter(f => f.severity === 'informational').length;
+
+  const totalAssetsCount = Math.max(assets.length, scans.length);
+  const scannedAssetsCount = scans.length;
 
   let score = 100 - (crit * 28 + high * 14 + med * 5);
   if (score < 0) score = 0;
@@ -383,24 +391,35 @@ export async function fetchRiskOverview(): Promise<RiskOverview> {
   const qv = findings.filter(f => f.quantum_vulnerable).length;
   const pqcScore = findings.length > 0 ? Math.round(((findings.length - qv) / findings.length) * 100) : 100;
 
+  // Derive trends from real scans if available
+  const riskTrends = scans.length > 0
+    ? scans.slice(0, 6).reverse().map((s, idx) => ({
+        date: s.asset_name ? (s.asset_name.length > 12 ? s.asset_name.substring(0, 10) + '..' : s.asset_name) : `Scan #${idx + 1}`,
+        score: s.overall_security_score,
+        legacy_count: (s.critical_count || 0) + (s.high_count || 0)
+      }))
+    : (findings.length > 0
+      ? [{ date: 'Initial Assessment', score: score, legacy_count: crit + high }]
+      : []);
+
   return {
     overall_score: score,
     pqc_score: pqcScore,
-    total_assets: 2,
-    assets_scanned: 2,
+    total_assets: totalAssetsCount,
+    assets_scanned: scannedAssetsCount,
     total_crypto_instances: findings.length,
     critical_findings: crit,
     high_findings: high,
     medium_findings: med,
     low_findings: low,
     info_findings: info,
-    severity_distribution: [
+    severity_distribution: findings.length > 0 ? [
       { name: 'Critical', value: crit, color: '#f43f5e' },
       { name: 'High', value: high, color: '#f97316' },
       { name: 'Medium', value: med, color: '#eab308' },
       { name: 'Low', value: low, color: '#3b82f6' },
       { name: 'Informational', value: info, color: '#10b981' }
-    ],
+    ] : [],
     algorithm_distribution: [
       { name: 'AES', count: findings.filter(f => f.algorithm.includes('AES')).length },
       { name: 'RSA', count: findings.filter(f => f.algorithm.includes('RSA')).length },
@@ -408,15 +427,12 @@ export async function fetchRiskOverview(): Promise<RiskOverview> {
       { name: 'SHA-2/3', count: findings.filter(f => f.algorithm.includes('SHA-2') || f.algorithm.includes('SHA-3')).length },
       { name: 'ECC', count: findings.filter(f => f.algorithm.includes('ECC') || f.algorithm.includes('25519')).length }
     ].filter(a => a.count > 0),
-    risk_trends: [
-      { date: 'Initial', score: 100, legacy_count: 0 },
-      { date: 'Current', score: score, legacy_count: crit + high }
-    ],
+    risk_trends: riskTrends,
     score_breakdown: {
-      algorithm_strength: crit > 0 ? 35 : (high > 0 ? 65 : 95),
-      key_hygiene: findings.some(f => f.rule_id === 'CRYPTO-RULE-016') ? 30 : 90,
-      protocol_security: 85,
-      certificate_health: 90,
+      algorithm_strength: findings.length > 0 ? (crit > 0 ? 35 : (high > 0 ? 65 : 95)) : 100,
+      key_hygiene: findings.length > 0 ? (findings.some(f => f.rule_id === 'CRYPTO-RULE-016') ? 30 : 90) : 100,
+      protocol_security: findings.length > 0 ? (crit > 0 ? 60 : 90) : 100,
+      certificate_health: findings.length > 0 ? 90 : 100,
       pqc_margin: pqcScore
     }
   };
@@ -509,31 +525,15 @@ export async function compareScans(scanIdA: string, scanIdB: string) {
   };
 }
 
-// â”€â”€â”€ Certificates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Certificates ──────────────────────────────────────────────────────────
 export async function fetchCertificates(): Promise<CertificateEntry[]> {
-  return [
-    {
-      id: 'cert-001',
-      organization_id: 'a0000000-0000-0000-0000-000000000001',
-      asset_id: 'ast-001',
-      endpoint: 'api.cryptotool.internal:443',
-      tls_version: 'TLSv1.3',
-      cipher_suite: 'TLS_AES_256_GCM_SHA384',
-      subject: 'CN=api.cryptotool.internal, O=Enterprise Secure Core, C=US',
-      issuer: 'CN=DigiCert Global Root CA, O=DigiCert Inc, C=US',
-      valid_from: '2026-01-01T00:00:00Z',
-      valid_until: '2026-12-31T23:59:59Z',
-      days_until_expiry: 118,
-      public_key_algorithm: 'RSA',
-      public_key_size: 2048,
-      signature_algorithm: 'SHA256withRSA',
-      sans: ['api.cryptotool.internal', 'vault.cryptotool.internal'],
-      chain_status: 'valid',
-      health_status: 'healthy',
-      is_demo: false,
-      created_at: new Date().toISOString()
-    }
-  ];
+  const local = localStorage.getItem('cryptotool_certs');
+  return local ? JSON.parse(local) : [];
+}
+
+export async function saveCertificate(cert: CertificateEntry): Promise<void> {
+  const current = await fetchCertificates();
+  localStorage.setItem('cryptotool_certs', JSON.stringify([cert, ...current.filter(c => c.id !== cert.id)]));
 }
 
 // â”€â”€â”€ Reports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -617,7 +617,7 @@ export async function fetchDigitalTwin(): Promise<import('../types').DigitalTwin
           migration_difficulty: 'COMPLEX',
           estimated_cost_inr: 'â‚¹18.4 Lakh',
           priority: 'P0',
-          affected_services: ['Legacy Banking', 'Citizen Identity', 'Payment Gateway']
+          affected_services: ['Core Banking Gateway', 'Identity Management', 'Payment Services']
         }
       },
       {
@@ -881,19 +881,18 @@ export async function fetchCryptoStrengthMatrix(): Promise<import('../types').Cr
 }
 
 export async function fetchAuditLogs(): Promise<AuditLogEntry[]> {
-  return [
-    {
-      id: 'log-001',
-      organization_id: 'a0000000-0000-0000-0000-000000000001',
-      user_email: 'security.analyst@cryptotool.internal',
-      action: 'SCAN_EXECUTED',
-      resource_type: 'scan',
-      resource_id: 'scan-001',
-      details: { target: 'Enterprise Secure Messenger', method: 'AST & Pattern Discovery' },
-      ip_address: '127.0.0.1',
-      created_at: new Date().toISOString()
-    }
-  ];
+  const local = localStorage.getItem('cryptotool_audit_logs');
+  return local ? JSON.parse(local) : [];
+}
+
+export async function logAuditEvent(entry: Omit<AuditLogEntry, 'id' | 'created_at'>): Promise<void> {
+  const current = await fetchAuditLogs();
+  const newLog: AuditLogEntry = {
+    ...entry,
+    id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    created_at: new Date().toISOString()
+  };
+  localStorage.setItem('cryptotool_audit_logs', JSON.stringify([newLog, ...current].slice(0, 50)));
 }
 
 export async function fetchHNDLRiskRecords(): Promise<import('../types').HNDLRiskRecord[]> {

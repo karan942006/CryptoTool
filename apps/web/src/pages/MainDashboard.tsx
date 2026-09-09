@@ -44,43 +44,25 @@ import * as api from '../services/api';
 import { useApp } from '../context/AppContext';
 
 const defaultRiskOverview: RiskOverview = {
-  overall_score: 72,
-  pqc_score: 64,
-  total_assets: 5,
-  assets_scanned: 5,
-  total_crypto_instances: 12,
-  critical_findings: 3,
-  high_findings: 3,
-  medium_findings: 2,
-  low_findings: 1,
-  info_findings: 3,
-  severity_distribution: [
-    { name: 'Critical', value: 3, color: '#f43f5e' },
-    { name: 'High', value: 3, color: '#f97316' },
-    { name: 'Medium', value: 2, color: '#eab308' },
-    { name: 'Low', value: 1, color: '#3b82f6' },
-    { name: 'Informational', value: 3, color: '#10b981' }
-  ],
-  algorithm_distribution: [
-    { name: 'AES', count: 4 },
-    { name: 'RSA', count: 3 },
-    { name: 'ECDH/ECC', count: 2 },
-    { name: '3DES', count: 1 },
-    { name: 'MD5/SHA1', count: 2 }
-  ],
-  risk_trends: [
-    { date: 'Week -4', score: 60, legacy_count: 5 },
-    { date: 'Week -3', score: 65, legacy_count: 5 },
-    { date: 'Week -2', score: 68, legacy_count: 4 },
-    { date: 'Week -1', score: 70, legacy_count: 4 },
-    { date: 'Today', score: 72, legacy_count: 6 }
-  ],
+  overall_score: 100,
+  pqc_score: 100,
+  total_assets: 0,
+  assets_scanned: 0,
+  total_crypto_instances: 0,
+  critical_findings: 0,
+  high_findings: 0,
+  medium_findings: 0,
+  low_findings: 0,
+  info_findings: 0,
+  severity_distribution: [],
+  algorithm_distribution: [],
+  risk_trends: [],
   score_breakdown: {
-    algorithm_strength: 65,
-    key_hygiene: 78,
-    protocol_security: 70,
-    certificate_health: 80,
-    pqc_margin: 64
+    algorithm_strength: 100,
+    key_hygiene: 100,
+    protocol_security: 100,
+    certificate_health: 100,
+    pqc_margin: 100
   }
 };
 
@@ -189,32 +171,37 @@ export const MainDashboard: React.FC = () => {
           value={riskData.total_assets}
           subtitle={`${riskData.assets_scanned} actively scanned`}
           icon={Layers}
-          trend={{ value: '+3 Multi-Cloud', isPositive: true }}
+          trend={riskData.total_assets > 0 ? { value: `${riskData.total_assets} Tracked`, isPositive: true } : undefined}
           glow="blue"
         />
 
         <KPICard
           title="Crypto Primitives"
           value={riskData.total_crypto_instances}
-          subtitle="Discovered in code, certs & KMS"
+          subtitle="Discovered in code, certs & endpoints"
           icon={Binary}
           glow="cyan"
         />
 
         <KPICard
-          title="Mosca Quantum Risk"
-          value="CRITICAL"
-          subtitle="X+Y (19y) > Z (10y) Alert"
+          title="Quantum Exposure"
+          value={riskData.total_crypto_instances > 0
+            ? `${riskData.total_crypto_instances - Math.round((riskData.pqc_score / 100) * riskData.total_crypto_instances)} Items`
+            : "0 Items"}
+          subtitle={riskData.total_crypto_instances > 0 && riskData.pqc_score < 100
+            ? "Requires FIPS PQC Migration"
+            : "No Vulnerable Primitives"}
           icon={Flame}
-          variant="critical"
+          variant={riskData.total_crypto_instances > 0 && riskData.pqc_score < 100 ? "critical" : "default"}
           glow="purple"
         />
 
         <KPICard
-          title="Est. PQC Budget"
-          value="â‚¹14.2 L"
-          subtitle="Covers 8 apps & 24 certs"
-          icon={Cpu}
+          title="High Severity Findings"
+          value={riskData.critical_findings + riskData.high_findings}
+          subtitle={`${riskData.critical_findings} Critical • ${riskData.high_findings} High`}
+          icon={AlertTriangle}
+          variant={riskData.critical_findings > 0 ? "critical" : (riskData.high_findings > 0 ? "warning" : "default")}
           glow="cyan"
         />
       </div>
@@ -226,7 +213,7 @@ export const MainDashboard: React.FC = () => {
           <ScoreGauge
             score={riskData.overall_score}
             label="Overall Cryptographic Score"
-            sublabel="Deterministic formula derived from verified primitives"
+            sublabel={riskData.total_crypto_instances > 0 ? "Deterministic formula derived from verified primitives" : "Clean baseline score • Awaiting initial scan"}
             type="security"
           />
         </Card>
@@ -236,7 +223,7 @@ export const MainDashboard: React.FC = () => {
           <ScoreGauge
             score={riskData.pqc_score}
             label="Post-Quantum Readiness"
-            sublabel="Quantum-safe vs Shor-vulnerable public key ratio"
+            sublabel={riskData.total_crypto_instances > 0 ? "Quantum-safe vs Shor-vulnerable public key ratio" : "Quantum-safe baseline • No vulnerable keys"}
             type="pqc"
           />
         </Card>
@@ -308,68 +295,86 @@ export const MainDashboard: React.FC = () => {
         {/* Severity Distribution */}
         <Card className="space-y-4">
           <CardHeader title="Severity Distribution" subtitle="Findings categorized by risk tier" />
-          <div className="h-56 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={riskData.severity_distribution.filter(d => d.value > 0)}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={75}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {riskData.severity_distribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}
-                />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="h-56 w-full flex items-center justify-center">
+            {riskData.severity_distribution.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={riskData.severity_distribution.filter(d => d.value > 0)}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={75}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {riskData.severity_distribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}
+                  />
+                  <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-xs font-mono text-slate-500 text-center">
+                No vulnerabilities discovered.<br />Execute a scan to generate severity breakdown.
+              </p>
+            )}
           </div>
         </Card>
 
         {/* Algorithm Families */}
         <Card className="space-y-4">
           <CardHeader title="Cryptographic Families" subtitle="Discovered primitive distribution" />
-          <div className="h-56 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={riskData.algorithm_distribution} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
-                <YAxis stroke="#64748b" fontSize={11} allowDecimals={false} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}
-                />
-                <Bar dataKey="count" fill="#38a9f7" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="h-56 w-full flex items-center justify-center">
+            {riskData.algorithm_distribution.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={riskData.algorithm_distribution} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
+                  <YAxis stroke="#64748b" fontSize={11} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}
+                  />
+                  <Bar dataKey="count" fill="#38a9f7" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-xs font-mono text-slate-500 text-center">
+                No algorithms cataloged.<br />Upload a code archive or APK to inspect primitives.
+              </p>
+            )}
           </div>
         </Card>
 
         {/* Security Trend */}
         <Card className="space-y-4">
           <CardHeader title="Security Score Trend" subtitle="Progressive organizational posture" />
-          <div className="h-56 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={riskData.risk_trends} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00f2fe" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#00f2fe" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="date" stroke="#64748b" fontSize={11} />
-                <YAxis domain={[0, 100]} stroke="#64748b" fontSize={11} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}
-                />
-                <Area type="monotone" dataKey="score" stroke="#00f2fe" strokeWidth={2} fillOpacity={1} fill="url(#scoreGradient)" />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="h-56 w-full flex items-center justify-center">
+            {riskData.risk_trends.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={riskData.risk_trends} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00f2fe" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#00f2fe" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="date" stroke="#64748b" fontSize={11} />
+                  <YAxis domain={[0, 100]} stroke="#64748b" fontSize={11} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}
+                  />
+                  <Area type="monotone" dataKey="score" stroke="#00f2fe" strokeWidth={2} fillOpacity={1} fill="url(#scoreGradient)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-xs font-mono text-slate-500 text-center">
+                Audit history begins with your first scan.
+              </p>
+            )}
           </div>
         </Card>
       </div>
@@ -388,36 +393,44 @@ export const MainDashboard: React.FC = () => {
             }
           />
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono">
-              <thead>
-                <tr className="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
-                  <th className="pb-3">Algorithm</th>
-                  <th className="pb-3">Title / Finding</th>
-                  <th className="pb-3">Severity</th>
-                  <th className="pb-3">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-200">
-                {recentFindings.map(f => (
-                  <tr
-                    key={f.id}
-                    onClick={() => navigate(`/findings/${f.id}`)}
-                    className="hover:bg-slate-800/40 cursor-pointer transition-colors"
-                  >
-                    <td className="py-3 font-bold text-cyan-300">{f.algorithm}</td>
-                    <td className="py-3 text-slate-300 font-sans truncate max-w-[200px]">{f.title}</td>
-                    <td className="py-3">
-                      <SeverityBadge severity={f.severity} size="sm" />
-                    </td>
-                    <td className="py-3">
-                      <StatusBadge status={f.status} size="sm" />
-                    </td>
+          {recentFindings.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs font-mono">
+                <thead>
+                  <tr className="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
+                    <th className="pb-3">Algorithm</th>
+                    <th className="pb-3">Title / Finding</th>
+                    <th className="pb-3">Severity</th>
+                    <th className="pb-3">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 text-slate-200">
+                  {recentFindings.map(f => (
+                    <tr
+                      key={f.id}
+                      onClick={() => navigate(`/findings/${f.id}`)}
+                      className="hover:bg-slate-800/40 cursor-pointer transition-colors"
+                    >
+                      <td className="py-3 font-bold text-cyan-300">{f.algorithm}</td>
+                      <td className="py-3 text-slate-300 font-sans truncate max-w-[200px]">{f.title}</td>
+                      <td className="py-3">
+                        <SeverityBadge severity={f.severity} size="sm" />
+                      </td>
+                      <td className="py-3">
+                        <StatusBadge status={f.status} size="sm" />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="py-8 text-center text-slate-500 font-mono text-xs">
+              <CheckCircle2 className="w-8 h-8 text-emerald-500/60 mx-auto mb-2" />
+              <p>No active cryptographic findings</p>
+              <p className="text-[10px] text-slate-600 mt-1">Execute a scan to detect algorithms, weak keys & ciphers</p>
+            </div>
+          )}
         </Card>
 
         {/* Recent Scans Table */}
@@ -432,43 +445,58 @@ export const MainDashboard: React.FC = () => {
             }
           />
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono">
-              <thead>
-                <tr className="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
-                  <th className="pb-3">Target</th>
-                  <th className="pb-3">Score</th>
-                  <th className="pb-3">Findings</th>
-                  <th className="pb-3">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-200">
-                {recentScans.map(s => (
-                  <tr
-                    key={s.id}
-                    onClick={() => navigate(s.status === 'completed' ? `/scans/results/${s.id}` : `/scans/progress/${s.id}`)}
-                    className="hover:bg-slate-800/40 cursor-pointer transition-colors"
-                  >
-                    <td className="py-3 font-sans">
-                      <p className="font-semibold text-white truncate max-w-[150px]">{s.asset_name || s.target_identifier}</p>
-                      <p className="text-[10px] text-slate-500 font-mono">{s.scan_type}</p>
-                    </td>
-                    <td className="py-3 font-bold text-cyan-400">
-                      {s.overall_security_score}/100
-                    </td>
-                    <td className="py-3 text-slate-300">
-                      {s.total_findings_count} items
-                    </td>
-                    <td className="py-3">
-                      <span className="text-[10px] px-2 py-0.5 rounded font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        {s.status.toUpperCase()}
-                      </span>
-                    </td>
+          {recentScans.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs font-mono">
+                <thead>
+                  <tr className="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
+                    <th className="pb-3">Target</th>
+                    <th className="pb-3">Score</th>
+                    <th className="pb-3">Findings</th>
+                    <th className="pb-3">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 text-slate-200">
+                  {recentScans.map(s => (
+                    <tr
+                      key={s.id}
+                      onClick={() => navigate(s.status === 'completed' ? `/scans/results/${s.id}` : `/scans/progress/${s.id}`)}
+                      className="hover:bg-slate-800/40 cursor-pointer transition-colors"
+                    >
+                      <td className="py-3 font-sans">
+                        <p className="font-semibold text-white truncate max-w-[150px]">{s.asset_name || s.target_identifier}</p>
+                        <p className="text-[10px] text-slate-500 font-mono">{s.scan_type}</p>
+                      </td>
+                      <td className="py-3 font-bold text-cyan-400">
+                        {s.overall_security_score}/100
+                      </td>
+                      <td className="py-3 text-slate-300">
+                        {s.total_findings_count} items
+                      </td>
+                      <td className="py-3">
+                        <span className="text-[10px] px-2 py-0.5 rounded font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          {s.status.toUpperCase()}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="py-8 text-center text-slate-500 font-mono text-xs">
+              <Play className="w-8 h-8 text-cyan-500/60 mx-auto mb-2" />
+              <p>No assessment scans executed yet</p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/scans/new')}
+                className="mt-2 text-cyan-400 hover:text-cyan-300"
+              >
+                Execute First Scan →
+              </Button>
+            </div>
+          )}
         </Card>
       </div>
     </div>
