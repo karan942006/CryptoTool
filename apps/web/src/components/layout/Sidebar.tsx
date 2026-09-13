@@ -194,6 +194,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
               Open Digital Twin
             </button>
           </div>
+          <div className="pt-2 text-center border-t border-slate-800/40 mt-2">
+            <p className="text-[10px] text-slate-500 font-mono">
+              Made By <span className="text-slate-400 font-medium">Shaila, Ishwari, Karan, Ketan, Tapan, Parth</span>
+            </p>
+          </div>
         </div>
       </aside>
     </>

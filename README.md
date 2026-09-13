@@ -148,5 +148,16 @@ CryptoTool includes two built-in reference target environments:
 
 ---
 
-## 📄 6. License
+## 👥 6. Team & Credits
+**Made By:**
+- **Shaila Mandkulkar**
+- **Ishwari Shinde**
+- **Karan Lingayat**
+- **Ketan Nimbare**
+- **Tapan Narvekar**
+- **Parth Kelaskar**
+
+---
+
+## 📄 7. License
 Licensed under the Apache License, Version 2.0.

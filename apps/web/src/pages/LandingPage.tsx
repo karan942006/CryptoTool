@@ -164,6 +164,44 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Footer */}
+      <footer className="border-t border-slate-800/80 bg-navy-950/90 py-10 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div className="space-y-2">
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <Shield className="w-5 h-5 text-cyan-400" />
+              <span className="font-bold text-white text-base tracking-tight">CryptoTool (ECDAT)</span>
+              <span className="text-xs font-mono uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-2 py-0.5 rounded-full">v1.0 Production</span>
+            </div>
+            <p className="text-xs text-slate-400">
+              Enterprise Cryptographic Discovery, PQC Readiness & Zero-Hallucination Risk Assessment
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center md:items-end gap-2">
+            <div className="px-4 py-2.5 rounded-xl border border-cyan-500/30 bg-cyan-950/20 text-xs text-slate-300 shadow-sm">
+              <span className="text-slate-400 font-medium">Made By </span>
+              <span className="text-cyan-300 font-semibold">Shaila Mandkulkar</span>
+              <span className="text-slate-500"> , </span>
+              <span className="text-cyan-300 font-semibold">Ishwari Shinde</span>
+              <span className="text-slate-500"> , </span>
+              <span className="text-cyan-300 font-semibold">Karan Lingayat</span>
+              <span className="text-slate-500"> , </span>
+              <span className="text-cyan-300 font-semibold">Ketan Nimbare</span>
+              <span className="text-slate-500"> , </span>
+              <span className="text-cyan-300 font-semibold">Tapan Narvekar</span>
+              <span className="text-slate-500"> , </span>
+              <span className="text-cyan-300 font-semibold">Parth Kelaskar</span>
+            </div>
+            <div className="flex items-center gap-3 text-[11px] font-mono text-slate-500">
+              <span>NIST FIPS 203/204/205 Compliant</span>
+              <span>•</span>
+              <span>Post-Quantum Ready</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+
     </div>
   );
 };
